@@ -678,6 +678,7 @@ const state = {
   calendarYear:2026,
   completedCampusYears:0,
   lastSettledCampusYear:null,
+  lastAcademicFailureYear:null,
   path:'undergrad', // undergrad | 读研 | 直博 | 外校深造 | 就业
   isCaptain:false,
   yearPlanTotal:0,
@@ -797,6 +798,7 @@ function loadGame(){
     state.completedCampusYears = Number.isInteger(data.state.completedCampusYears) && data.state.completedCampusYears >= 0
       ? data.state.completedCampusYears : Math.max(0, state.year + (state.flags.transferExtended ? 1 : 0));
     state.lastSettledCampusYear = Number.isInteger(data.state.lastSettledCampusYear) ? data.state.lastSettledCampusYear : null;
+    state.lastAcademicFailureYear = Number.isInteger(data.state.lastAcademicFailureYear) ? data.state.lastAcademicFailureYear : null;
     state.eventHistory = state.eventHistory && typeof state.eventHistory === 'object' && !Array.isArray(state.eventHistory) ? state.eventHistory : {};
     const remainders = state.statRemainders || {};
     state.statRemainders = Object.fromEntries(Object.keys(state.stats).map(k => [k,
@@ -4275,6 +4277,22 @@ function settleYearStats(){
   return {growth};
 }
 
+/* 固定年末事件：按年度成长后的学业判断，不参与日常随机抽选与快速时段折算。 */
+function academicFailureEvent(s){
+  if(s.stats.academy >= 60 || s.lastAcademicFailureYear === s.calendarYear) return null;
+  const handled = s=>{ s.lastAcademicFailureYear = s.calendarYear; return {}; };
+  return {id:'year_end_academic_failure', tag:'学业 · 年末事件', title:'你能做的，岂止如此', auto:false,
+    desc:'期末成绩公布，你有一门课程没有通过。老师在成绩单旁写下：“你能做的，岂止如此。”你在球场上付出了很多，但课堂里的欠账也到了需要面对的时候。补考和调整学习安排的机会仍在，你准备怎样回应？',
+    choices:[
+      {text:'认真复习，准备补考', effect:{academy:6,mentality:-2,ability:-1}, resolve:handled,
+       result:'你整理了错题和课程笔记，开始认真准备补考。训练时间被挤占，但学习状态逐渐改善。'},
+      {text:'请同学一起补课', effect:{academy:4,relation:2,ability:-1}, resolve:handled,
+       result:'你向同学坦诚了挂科的事，约好一起复习。你少练了几次球，也补上了不少遗漏的知识。'},
+      {text:'暂时搁置，继续踢球', effect:{academy:-3,mentality:-2,relation:-1}, resolve:handled,
+       result:'你暂时把成绩单收了起来。球场能让你忘掉烦恼，但没解决的课程问题仍让你心里不安。'}
+    ]};
+}
+
 /* ---------------- 渲染 ---------------- */
 const $ = id => document.getElementById(id);
 function show(scr){
@@ -4587,7 +4605,7 @@ function chooseCollege(){
 
 function assignTeam(chosenGroup, chosenName){
   state.year = 0; state.path = 'undergrad'; state.isCaptain = false;
-  state.completedCampusYears = 0; state.lastSettledCampusYear = null;
+  state.completedCampusYears = 0; state.lastSettledCampusYear = null; state.lastAcademicFailureYear = null;
   state.gameMode = 'full'; state.eventHistory = {};
   state.statRemainders = {ability:0, mentality:0, relation:0, academy:0};
   const group = chosenGroup || (Math.random()<0.5?'甲组':'乙组');
@@ -4894,7 +4912,9 @@ function renderEvent(ev){
   // 事件内容
   $('evTag').textContent = ev.tag || '事件';
   $('evTitle').textContent = ev.title;
-  $('evDesc').textContent = ev.desc + (ev.timeScale > 1 ? `（${gameModeName()}：本次日常抉择代表 ${ev.timeScale} 倍时段，四维收益与代价一并折算。）` : '');
+  // 快速版与简单版的日常抉择代表 ev.timeScale 倍时段，四维收益与代价在结算时一并折算。
+  // 这属于数值机制说明，不追加到校园事件正文中。
+  $('evDesc').textContent = ev.desc;
   $('revealChoices').checked = !!state.showChoiceDetails;
   const box = $('evChoices'); box.innerHTML='';
   ev.choices.forEach((c,i)=>{
@@ -5058,7 +5078,7 @@ function chooseOption(ev, i){
     const roll = applyChoiceRisk(c, rollChoice(c, ev.timeScale || 1));
     if(c.onSuccess && roll.success) c.onSuccess(state);
     if(c.onFail && !roll.success) c.onFail(state);
-    animateResult(roll, bioPharmacyChoiceDrain());   // 生物药学：低学业心态消耗
+    animateResult(roll, bioPharmacyChoiceDrain(), ev.onDone);   // 生物药学：低学业心态消耗
     return;
   }
 
@@ -5071,7 +5091,7 @@ function chooseOption(ev, i){
   const actual = applyStats(roll.effects);
   checkAchievements(state);
   if(bioPharmacyBreakdown()) return;
-  showResult(roll.text, actual, c.serviceYears || 0, lowAcademyTipHTML(drained));
+  showResult(roll.text, actual, c.serviceYears || 0, lowAcademyTipHTML(drained), ev.onDone);
 }
 
 function statEffectFactor(key, cur, positive){
@@ -5107,13 +5127,13 @@ function applyStats(eff){
 }
 
 /* 结算动画：数值在可能结果间来回跳动，最后落定 */
-function animateResult(roll, drained){
+function animateResult(roll, drained, onDone=null){
   const box = $('evChoices');
   if(isFastMode()){
     const actual = applyStats(roll.effects);
     $('evStats').innerHTML = statBarHTML();
     checkAchievements(state);
-    if(!bioPharmacyBreakdown()) showResult(roll.text, actual, 0, lowAcademyTipHTML(drained));
+    if(!bioPharmacyBreakdown()) showResult(roll.text, actual, 0, lowAcademyTipHTML(drained), onDone);
     return;
   }
   box.innerHTML = '<div class="result rolling">命运正在决定……</div>';
@@ -5137,12 +5157,12 @@ function animateResult(roll, drained){
       $('evStats').innerHTML = statBarHTML();
       checkAchievements(state);
       if(bioPharmacyBreakdown()) return;
-      showResult(roll.text, actual, 0, lowAcademyTipHTML(drained));
+      showResult(roll.text, actual, 0, lowAcademyTipHTML(drained), onDone);
     }
   }, 75);
 }
 
-function showResult(result, eff, serviceYears=0, note=''){
+function showResult(result, eff, serviceYears=0, note='', onDone=null){
   const box = $('evChoices');
   const delta = eff && Object.keys(eff).length ? `<div class="delta">${effectText(eff)}</div>`:'';
   box.innerHTML = `<div class="result">${result||'……'}</div>${delta}${note || ''}
@@ -5156,6 +5176,7 @@ function showResult(result, eff, serviceYears=0, note=''){
       return;
     }
     if(state.repeatYear){ queue=[]; return yearEnd(); }
+    if(onDone){ onDone(); return; }
     processQueue();
   };
 }
@@ -5207,6 +5228,19 @@ function yearEnd(){
   }
   state.yearPlanDone = state.yearPlanTotal;
   const {growth:g} = settleYearStats();
+  updateSquadRole();
+  checkAchievements(state);
+  const failure = academicFailureEvent(state);
+  if(failure){
+    failure.onDone = ()=>renderYearEndSummary(g);
+    current = failure;
+    renderEvent(failure);
+    return;
+  }
+  renderYearEndSummary(g);
+}
+
+function renderYearEndSummary(g){
   updateSquadRole();
   checkAchievements(state);
   const rows = [

@@ -920,3 +920,82 @@ test('golden glove survives saves and history; old saves and a new career start 
   assert.equal(run('loadInheritedAchievements().golden_glove'),true);
   assert.equal(run('ACHIEVEMENTS.length'),31);
 });
+
+test('end-of-year failure is mandatory below 60 in all modes, and 60 is not failing', () => {
+  for(const mode of ['full','fast','easy'])for(const academy of [59,60]){
+    const {run,nodes}=game(190);
+    run(`state.gameMode='${mode}';state.stats.academy=${academy};
+      annualGrowth=()=>({ability:0,mentality:0,relation:0,academy:0});yearEnd();`);
+    if(academy<60){
+      assert.equal(run("document.getElementById('evTitle').textContent"),'你能做的，岂止如此');
+      assert.equal(nodes.get('evChoices').children.length,3);
+      assert.equal(run('current.timeScale'),undefined);
+      assert.equal(run('state.completedCampusYears'),1);
+    }else{
+      assert.match(run("document.getElementById('yrTitle').textContent"),/学年结算/);
+      assert.notEqual(run("document.getElementById('evTitle').textContent"),'你能做的，岂止如此');
+    }
+  }
+});
+
+test('failure checks settled academy, resumes the same growth summary and never applies annual growth twice', () => {
+  const {run,nodes}=game(191);
+  run(`state.stats.academy=57;annualGrowth=()=>({ability:2,mentality:-1,relation:1,academy:2});yearEnd();`);
+  assert.equal(run('state.stats.academy'),58);
+  nodes.get('evChoices').children[0].onclick();
+  run("document.getElementById('btnNext').onclick();");
+  assert.equal(run('state.completedCampusYears'),1);
+  assert.equal(run('state.lastAcademicFailureYear'),2026);
+  assert.match(run("document.getElementById('yrTable').innerHTML"),/学业值 自然成长<\/td><td[^>]*>\+1</);
+  assert.equal(run("state.log.filter(e=>JSON.stringify(e).includes('学年结算 ·')).length"),1);
+  const passing=game(192);
+  passing.run('state.stats.academy=59;annualGrowth=()=>({academy:2});yearEnd();');
+  assert.equal(passing.run('state.stats.academy'),60);
+  assert.notEqual(passing.run("document.getElementById('evTitle').textContent"),'你能做的，岂止如此');
+});
+
+test('failure continues into graduation and postgraduate years, while service and interrupted years are excluded', () => {
+  for(const [path,year,final] of [['就业',3,true],['读研',4,false],['读研',6,true],['直博',7,true]]){
+    const {run,nodes}=game(193);
+    run(`state.path='${path}';state.year=${year};state.stats.academy=50;
+      annualGrowth=()=>({ability:0,mentality:0,relation:0,academy:0});yearEnd();`);
+    assert.equal(run("document.getElementById('evTitle').textContent"),'你能做的，岂止如此');
+    nodes.get('evChoices').children[1].onclick();run("document.getElementById('btnNext').onclick();");
+    assert.equal(run("document.getElementById('btnYearEnd').textContent"),final?'查看结局':'进入下一年');
+  }
+  const {run}=game(194);
+  run('state.stats.academy=30;state.militaryYearsRemaining=2;serviceYear();state.repeatYear=true;yearEnd();');
+  assert.equal(run('state.completedCampusYears'),0);
+  assert.notEqual(run("document.getElementById('evTitle').textContent"),'你能做的，岂止如此');
+});
+
+test('failure is handled once per calendar year, persists in saves, and resets for old saves and new careers', () => {
+  const {run,nodes}=game(195);
+  run('state.stats.academy=50;annualGrowth=()=>({ability:0,mentality:0,relation:0,academy:0});yearEnd();');
+  nodes.get('evChoices').children[2].onclick();run("document.getElementById('btnNext').onclick();saveGame();loadGame();");
+  assert.equal(run('academicFailureEvent(state)'),null);
+  assert.equal(run('state.lastAcademicFailureYear'),2026);
+  run('state.calendarYear++;yearEnd();');
+  assert.equal(run('current.id'),'year_end_academic_failure');
+  run(`const old=JSON.parse(localStorage.getItem(SAVE_KEY));delete old.state.lastAcademicFailureYear;
+    localStorage.setItem(SAVE_KEY,JSON.stringify(old));loadGame();`);
+  assert.equal(run('state.lastAcademicFailureYear'),null);
+  run("state.lastAcademicFailureYear=2026;assignTeam('甲组',GROUPS['甲组'][0]);");
+  assert.equal(run('state.lastAcademicFailureYear'),null);
+});
+
+test('year-end failure remains manual in easy mode and reveal preserves continuation with protected penalties', () => {
+  const {run,nodes}=game(196);
+  run(`state.gameMode='easy';state.stats={ability:70,mentality:70,relation:70,academy:50};
+    annualGrowth=()=>({ability:0,mentality:0,relation:0,academy:0});yearEnd();setupRevealToggle();
+    document.getElementById('revealChoices').checked=true;document.getElementById('revealChoices').onchange();`);
+  assert.equal(run('state.lastAcademicFailureYear'),null);
+  nodes.get('evChoices').children[0].onclick();run("document.getElementById('btnNext').onclick();");
+  assert.equal(run('state.stats.academy'),59);
+  assert.equal(run('state.stats.ability'),70);
+  assert.equal(run('state.stats.mentality'),70);
+  assert.equal(run('state.stats.relation'),70);
+  assert.equal(run('academicFailureEvent(state)'),null);
+  assert.match(run("document.getElementById('yrTitle').textContent"),/学年结算/);
+  assert.equal(run('state.completedCampusYears'),1);
+});

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>华工杯 · 校园足球模拟器</title>
+<title>华工杯 · 校园足球模拟器 V3.0</title>
 <style>
   :root{
     --bg:#0e1a2b; --bg2:#13243a; --card:#1a2f4a; --card2:#203a5c;
@@ -256,6 +256,18 @@
   .ach-item.locked{opacity:.45; filter:grayscale(.8);}
   .ach-item.locked .ach-icon{color:var(--sub);}
   .ach-item.locked .ach-name{color:var(--sub);}
+  .ach-item.ach-flip{font-family:inherit; color:var(--ink); cursor:pointer; perspective:700px; min-height:122px; width:100%;}
+  .ach-flipper{display:grid; width:100%; transform-style:preserve-3d; transition:transform .5s ease;}
+  .ach-item.flipped .ach-flipper{transform:rotateY(180deg);}
+  .ach-face{grid-area:1 / 1; min-width:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  .ach-back{transform:rotateY(180deg);}
+  .ach-condition{font-size:10px; line-height:1.5; margin-top:6px; overflow-wrap:anywhere; color:var(--ink);}
+  .ach-hint{font-size:9px; color:var(--sub); margin-top:6px;}
+  .ach-item.flipped{opacity:1; filter:none; border-color:var(--accent);}
+  .ach-item.flipped .ach-name{color:var(--ink);}
+  .ach-item.ach-flip:focus-visible{outline:2px solid var(--gold); outline-offset:3px;}
+  @media (prefers-reduced-motion:reduce){.ach-flipper{transition:none;}}
   .ach-toast{position:fixed; left:50%; top:16px; transform:translate(-50%,-140%);
     background:linear-gradient(135deg,#f5c451,#ff9f3d); color:#3a2c12; font-weight:800;
     font-size:14px; padding:12px 18px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,.45);
@@ -312,7 +324,7 @@
     <div class="notice">
       <div class="seal">华中科技<br>大学</div>
       <h1>录取通知书</h1>
-      <div class="sub">H U S T · 校 园 足 球 生 涯</div>
+      <div class="sub">H U S T · 校 园 足 球 生 涯 · V3.0</div>
       <p>同学，恭喜你被我校录取！<br>请填写你的姓名，开启你的校园足球生涯。</p>
       <div class="field"><input id="nameInput" type="text" placeholder="请输入你的姓名" maxlength="8" autocomplete="off"></div>
     </div>
@@ -365,11 +377,19 @@
   <!-- 球队分配 -->
   <div class="screen" id="scr-team">
     <h2>球探报告</h2>
-    <p class="muted">根据你的资料，你被随机分配到了以下学院。这里，将是你的主场。</p>
+    <p class="muted">你已选择自己的学院。这里，将是你的主场。</p>
     <div class="teambar" id="teamReveal"></div>
     <div class="panel" id="scoutReport"></div>
     <div class="spacer"></div>
-    <button class="btn mt16" id="btnStart">开始我的绿茵生涯</button>
+    <div class="panel">
+      <div class="sectitle">选择生涯节奏</div>
+      <p class="muted">标准版：逐场选择比赛方式，每学年 6–8 个日常事件。</p>
+      <p class="muted">快速版：每学年 4 个日常抉择，代表较长时间的投入；整届比赛自动模拟并展示赛果。分流、升学、服役、裁判成长和彩蛋仍由你决定。</p>
+      <p class="muted">简单版：沿用快速流程，正向数值收益提高、事件和赛事不扣四维。保留彩蛋、伤病经历与生涯选择，适合收集成就。</p>
+    </div>
+    <button class="btn gold mt16" id="btnStart">标准版 · 开始生涯</button>
+    <button class="btn ghost mt16" id="btnStartFast">快速版 · 开始生涯</button>
+    <button class="btn ghost mt16" id="btnStartEasy">简单版 · 开始生涯</button>
   </div>
 
   <!-- 主界面 -->
@@ -497,7 +517,7 @@
 
 <script>
 /* ============================================================
- * 华工杯 · 校园足球模拟器 —— 校园足球生涯模拟（测试版）
+ * 华工杯 · 校园足球模拟器 —— 校园足球生涯模拟（V3.0）
  * 数值系统 / 事件 / 结局 详见同目录三份 Word 文档
  * ============================================================ */
 
@@ -656,6 +676,8 @@ const state = {
   potential:0,
   year:0,           // 0=大一 1=大二 2=大三 3=大四 4=研一/博一 ...
   calendarYear:2026,
+  completedCampusYears:0,
+  lastSettledCampusYear:null,
   path:'undergrad', // undergrad | 读研 | 直博 | 外校深造 | 就业
   isCaptain:false,
   yearPlanTotal:0,
@@ -681,14 +703,17 @@ const state = {
   seasonChampions:null,
   cupSeasonCount:0,
   championColleges:{},
-  flags:{ bigInjury:false, jiaChampion:false, yiChampion:false, proTrial:false, extendGraduation:false, varsity:false, wasCaptain:false,
+  flags:{ bigInjury:false, goldenGlove:false, jiaChampion:false, yiChampion:false, proTrial:false, extendGraduation:false, varsity:false, wasCaptain:false,
           kaoyanFail:false, referee:false, refereeFinal:false, refereeL1Passed:false, refereeLeagueQualified:false,
           militaryServed:false, transferAttempted:false, transferDone:false, transferExtended:false,
           xinshengChampion:false, biyeChampion:false, crossExam:false, medicalSplit:false, medicalDirect:false, tongjiChampion:false,
-          wentToField:false, superCupChampion:false, fruitBasket:false, trophyBlessing:false, worldCupPromise:false,
+          wentToField:false, freshmanCoach:false, superCupChampion:false, fruitBasket:false, trophyBlessing:false, worldCupPromise:false,
           metWeiShihao:false, metXuBin:false,
           pharmacyTrack:'', mentalBreakdown:false, academicWarningHandled:false,
           stayUpChain:false, stayUpPush:false, fatiguedMatch:false, warmedUpMatch:false },
+  gameMode:'full',
+  eventHistory:{},
+  statRemainders:{ability:0, mentality:0, relation:0, academy:0},
   achievements:{},
   achievementScopeVersion:2, // achievements 只记录本档，历史记录单独保存
   achievementClaimed:false,
@@ -745,6 +770,7 @@ function loadGame(){
     const defaultFlags = { ...state.flags };
     Object.assign(state, data.state);
     state.flags = { ...defaultFlags, ...data.state.flags };
+    state.flags.goldenGlove = data.state.flags?.goldenGlove === true;
     state.rosters = state.rosters || {};
     Object.keys(GROUPS).forEach(league => {
       if(!Array.isArray(state.rosters[league])) state.rosters[league] = GROUPS[league].slice();
@@ -767,6 +793,14 @@ function loadGame(){
         .map(a => [a.id, true]));
     }
     state.achievementScopeVersion = 2;
+    state.gameMode = ['full','fast','easy'].includes(state.gameMode) ? state.gameMode : 'full';
+    state.completedCampusYears = Number.isInteger(data.state.completedCampusYears) && data.state.completedCampusYears >= 0
+      ? data.state.completedCampusYears : Math.max(0, state.year + (state.flags.transferExtended ? 1 : 0));
+    state.lastSettledCampusYear = Number.isInteger(data.state.lastSettledCampusYear) ? data.state.lastSettledCampusYear : null;
+    state.eventHistory = state.eventHistory && typeof state.eventHistory === 'object' && !Array.isArray(state.eventHistory) ? state.eventHistory : {};
+    const remainders = state.statRemainders || {};
+    state.statRemainders = Object.fromEntries(Object.keys(state.stats).map(k => [k,
+      Number.isFinite(remainders[k]) && Math.abs(remainders[k]) < 1 ? remainders[k] : 0]));
     return true;
   }catch(e){ return false; }
 }
@@ -782,6 +816,7 @@ const ACHIEVEMENTS = [
   {id:'green_start', icon:'🌱', name:'绿茵起航', desc:'完成大一学年', check:s=>s.year>=1},
   {id:'first_goal', icon:'⚽', name:'处子进球', desc:'生涯累计打入 1 球', check:s=>s.careerGoals>=1},
   {id:'goal_hunter', icon:'🔥', name:'进球机器', desc:'生涯累计打入 20 球', check:s=>s.careerGoals>=20},
+  {id:'golden_glove', icon:'🧤', name:'金手套', desc:'以门将身份出战，球队在单届赛事打入决赛，且含决赛累计丢球不超过 2 球（不含点球大战）', check:s=>!!s.flags.goldenGlove},
   {id:'captain_band', icon:'🎖️', name:'戴上袖标', desc:'当选院队队长', check:s=>s.flags.wasCaptain},
   {id:'varsity_star', icon:'🌟', name:'校队之星', desc:'入选学校足球队', check:s=>s.flags.varsity},
   {id:'champion_glory', icon:'🏆', name:'甲组之巅', desc:'夺得华工杯甲组冠军', check:s=>s.flags.jiaChampion},
@@ -796,7 +831,7 @@ const ACHIEVEMENTS = [
   {id:'military_service', icon:'🪖', name:'军旅归来', desc:'完成两年服役并保留学籍', check:s=>s.flags.militaryServed},
   {id:'fan_favorite', icon:'🐦', name:'校园顶流', desc:'校内球迷关注度达到 80', check:s=>s.media.fans>=80},
   {id:'official_recognition', icon:'📢', name:'官方认可', desc:'HUSTFootball 关注度达到 80', check:s=>s.media.officials>=80},
-  {id:'highest_mountain_longest_river', icon:'🏔️', name:'最高的山、最长的河', desc:'完成13年最长生涯，且每个学年都有华工杯出战纪录', check:s=>s.path==='读博' && (baseTotalYears(s.path) + (s.flags.militaryServed ? 2 : 0) + (s.flags.transferExtended ? 1 : 0)) === 13 && s.cupSeasonCount>=baseTotalYears(s.path)},
+  {id:'highest_mountain_longest_river', icon:'🏔️', name:'最高的山、最长的河', desc:'完成13年最长生涯，且每个学年都有华工杯出战纪录', check:s=>s.path==='读博' && s.year>=academicYears(s.path,s)-1 && (academicYears(s.path,s) + (s.flags.militaryServed ? 2 : 0) + (s.flags.transferExtended ? 1 : 0)) === 13 && s.cupSeasonCount>=academicYears(s.path,s)+(s.flags.transferExtended ? 1 : 0)},
   {id:'grand_slam', icon:'👑', name:'全满贯', desc:'夺得新生杯、华工杯乙组、华工杯甲组、毕业杯和超级杯冠军', check:s=>s.flags.xinshengChampion && s.flags.yiChampion && s.flags.jiaChampion && s.flags.biyeChampion && s.flags.superCupChampion},
   {id:'dual_college_legend', icon:'🏛️', name:'双院名宿', desc:'代表至少两个不同学院分别夺得杯赛冠军', check:s=>Object.keys(s.championColleges || {}).length>=2},
   {id:'highest_honor', icon:'🏆', name:'最高荣誉', desc:'夺得超级杯冠军', check:s=>s.flags.superCupChampion},
@@ -844,12 +879,32 @@ function renderAchievements(summaryId, gridId){
     const known = current || historical;
     const status = current ? '本档已解锁' : (historical ? '历史已解锁' : '尚未解锁');
     const cls = current ? 'unlocked' : (historical ? 'inherited' : 'locked');
+    if(!current){
+      const frontLabel = historical ? a.name + '，历史已解锁，点击查看条件' : '未解锁成就，点击查看名称和解锁条件';
+      return `<button type="button" class="ach-item ${cls} ach-flip" data-ach-flip="${a.id}" aria-pressed="false"
+        aria-label="${frontLabel}" data-front-label="${frontLabel}" data-reveal-label="${a.name}：${a.desc}。再次点击翻回。">
+        <span class="ach-flipper" aria-hidden="true">
+          <span class="ach-face ach-front"><span class="ach-icon">${known?a.icon:'?'}</span><span class="ach-name">${known?a.name:'？？？'}</span><span class="ach-status">${status}</span><span class="ach-hint">点击翻牌</span></span>
+          <span class="ach-face ach-back"><span class="ach-name">${a.name}</span><span class="ach-condition">${a.desc}</span><span class="ach-hint">再次点击翻回</span></span>
+        </span>
+      </button>`;
+    }
     return `<div class="ach-item ${cls}" title="${known ? status + '：' + a.desc : status}">
       <div class="ach-icon">${known?a.icon:'?'}</div>
       <div class="ach-name">${known?a.name:'？？？'}</div>
       <div class="ach-status">${status}</div>
     </div>`;
   }).join('');
+  $(gridId).onclick = event=>{
+    const card = event.target.closest('[data-ach-flip]');
+    if(card && $(gridId).contains(card)) toggleAchievementCard(card);
+  };
+}
+
+function toggleAchievementCard(card){
+  const revealed = card.classList.toggle('flipped');
+  card.setAttribute('aria-pressed', String(revealed));
+  card.setAttribute('aria-label', revealed ? card.dataset.revealLabel : card.dataset.frontLabel);
 }
 
 function showAchievementToast(a){
@@ -1298,6 +1353,102 @@ const REGULAR_EVENTS = [
 
 /* ---------------- 事件池调整（同济医学院组） ---------------- */
 /* 某个事件是否包含提升学业值的选项 */
+/* 新增校园日常：明确的时间成本、学习途径和逆境选择。 */
+const CAMPUS_EVENTS = [
+  {id:'equipment_inventory', title:'球队器材盘点', cond:s=>true,
+   desc:'队里的球、标志碟和训练背心对不上账。教练希望有人把借还记录重新整理清楚。',
+   choices:[
+     ch('和队友逐项核对', .85, 'relation', {relation:2,academy:1}, {mentality:-1}, '你们建立了借还表，今后找器材省事多了。', '核对花了很久，你错过了自己计划的休息。'),
+     ch('学习修补和保养', .78, 'academy', {ability:1,academy:2}, {ability:-1}, '你学会检查球压与装备磨损，下次训练更有准备。', '修补没成功，只能把旧装备送修。'),
+     ch('随手填个数交差', .3, 'relation', {mentality:1,relation:-1}, {relation:-3,mentality:-1}, '记录暂时交上去了，但队友替你补了不少工作。', '缺失器材被查出来，大家不再放心让你管理。')]},
+  {id:'waterlogged_pitch', title:'雨后积水场地', pressure:true, cond:s=>true,
+   desc:'大雨刚停，训练场仍有积水。教练征求大家意见：今晚换一种训练，还是按原计划上场？',
+   choices:[
+     ch('改做灵活性与恢复', .85, 'academy', {mentality:1,ability:-1}, {ability:-1,relation:-1}, '你们减少了训练量，恢复比较充分，但没练成原定的战术。', '调整方案没协调好，训练效果一般。'),
+     ch('用走位演练替代冲刺', .72, 'ability', {ability:1,mentality:-1}, {ability:-2,mentality:-1}, '低速演练让跑位更熟悉，但湿冷天气让你有些疲惫。', '场地影响了节奏，动作变形，训练质量下降。'),
+     ch('照常高强度训练', .4, 'ability', {ability:2,mentality:-2}, {ability:-3,mentality:-2}, '你完成了训练，却透支了恢复时间。', '湿滑场地让你频频打滑，训练和状态都受影响。')]},
+  {id:'personal_review', title:'赛后错题式复盘', cond:s=>true,
+   desc:'队友把训练赛录像发给你。一次丢球与你的站位有关，你准备怎样看待这段录像？',
+   choices:[
+     ch('记录问题并安排针对训练', .8, 'academy', {ability:2,academy:2}, {mentality:-1}, '你把错误拆成可练的小目标，比反复自责更有效。', '你一时找不到解决方法，但至少知道问题在哪里。'),
+     ch('和队友一起分析配合', .82, 'relation', {relation:2,ability:1}, {relation:-1}, '你们发现了协防漏洞，约定了下次的提醒方式。', '讨论暂时没有结论，大家都有些不耐烦。'),
+     ch('在群里指责队友', .25, 'mentality', {mentality:1,relation:-2}, {relation:-4,mentality:-2}, '你发泄了一口气，却让队友不愿再和你复盘。', '录像证明你也有责任，争吵让信任跌到低点。')]},
+  {id:'futsal_invitation', title:'校园五人制邀请', cond:s=>!s.injury,
+   desc:'同学邀你周末参加校园五人制交流赛，但你原计划留一天复习、一天下午休息。',
+   choices:[
+     ch('只踢半天，按时回去复习', .8, 'mentality', {ability:1,academy:1}, {mentality:-1}, '小场配合练了触球，回去后你也完成了学习计划。', '交通比预计更久，休息时间被压缩了。'),
+     ch('连踢两天', .65, 'ability', {ability:2,academy:-2,mentality:-1}, {ability:-2,academy:-2}, '你练得过瘾，但没复习，也没有充分恢复。', '你越踢越累，动作质量下降，复习也没完成。'),
+     ch('谢绝邀请，完成学习任务', .82, 'academy', {academy:3,relation:-1}, {academy:1,mentality:-1}, '你按计划完成了复习，同学有些遗憾，仍尊重你的选择。', '题目比想象中难，你推进了一部分，留待下次继续。', {study:true})]},
+  {id:'rookie_plan', title:'学弟训练计划', coachOnly:true, cond:s=>!!s.flags.freshmanCoach,
+   desc:'刚加入院队的学弟请你帮忙制定训练计划。你自己也有作业和训练要完成。',
+   choices:[
+     ch('教他制定可执行的小目标', .82, 'relation', {relation:2,academy:1}, {mentality:-1}, '学弟学会了自己复盘，你也练习了表达和计划能力。', '他还不太理解你的安排，需要更多耐心。'),
+     ch('包揽他的全部训练', .6, 'ability', {relation:2,academy:-2}, {academy:-3,mentality:-2}, '学弟很感谢你，但你把自己的课业往后拖了。', '你兼顾不了两人的进度，作业与训练都受了影响。'),
+     ch('约固定半小时答疑', .85, 'mentality', {relation:1,mentality:1}, {relation:-1}, '边界清楚，你们都能坚持下去。', '时间没约好，学弟今天没等到你。')]},
+  {id:'team_reimbursement', title:'球队经费报销', pressure:true, coachOnly:true, cond:s=>!!s.flags.freshmanCoach,
+   desc:'队里请你协助整理参赛交通和装备票据。报销有截止时间，材料漏项会影响全队。',
+   choices:[
+     ch('核对清单后再提交', .85, 'academy', {academy:2,ability:-1}, {relation:-1,mentality:-1}, '材料一次通过，你花了一个下午，也学会了核对表格。', '仍有一张票据缺失，你得和队友重新确认。'),
+     ch('分工核对，主动说明缺项', .8, 'relation', {relation:2,mentality:-1}, {relation:-2}, '大家补齐了材料，但来回沟通让你有些疲惫。', '分工说得不清楚，几个人做了重复工作。'),
+     ch('先交材料，不管缺项', .25, 'relation', {mentality:1,relation:-1}, {relation:-4,mentality:-2}, '材料暂时收下了，队友仍要替你补交。', '报销被退回，队友责怪你草率处理。')]},
+  {id:'defeat_group_chat', title:'失利后的群聊争执', pressure:true, cond:s=>true,
+   desc:'训练赛输了，队群里争起了谁该负责。有人点了你的名字，手机消息不断跳出来。',
+   choices:[
+     ch('说明自己的失误并约线下复盘', .8, 'relation', {relation:1,mentality:-1}, {relation:-1,mentality:-2}, '争论逐渐停下，但面对批评仍让你难受。', '对方暂时听不进去，你只能等大家冷静。'),
+     ch('退出聊天，先跑步冷静', .85, 'mentality', {mentality:1,relation:-1}, {mentality:-2}, '情绪缓了下来，但队友觉得你暂时没有回应。', '你反复想着争论，没能真正放松。'),
+     ch('截图嘲讽队友', .2, 'mentality', {mentality:1,relation:-3}, {relation:-5,mentality:-2}, '你出了一口气，却伤害了更衣室的信任。', '截图传开，争论升级，你的心情也更差。')]},
+  {id:'course_study_group', title:'专业课学习小组', cond:s=>true,
+   desc:'同专业同学组织每周两次学习小组。时间在训练结束后，大家只讲自己真正理解的内容。',
+   choices:[
+     ch('提前准备，再讲给同学听', .82, 'academy', {academy:3,relation:1,ability:-1}, {academy:1,mentality:-1}, '讲解暴露了知识盲点，你们逐一补上，课程进度稳了下来。', '讲解不够清楚，但准备过程让你掌握了部分内容。', {study:true}),
+     ch('带着问题参加讨论', .8, 'academy', {academy:3,mentality:1}, {academy:1}, '同学帮你理清了概念，你回去又独立做了一遍。', '小组也没解出所有题，你记下问题准备问老师。', {study:true}),
+     ch('只抄答案，留时间加练', .35, 'ability', {ability:1,academy:-2}, {academy:-3,relation:-1}, '你多练了一会儿，却没有学懂作业。', '课堂追问时你解释不清，同学也不愿再让你抄。')]},
+  {id:'lab_report_deadline', title:'实验报告截止日', pressure:true, cond:s=>true,
+   desc:'课程实践报告临近截止。老师提醒：数据与分析必须自己完成，院队训练也安排在今晚。',
+   choices:[
+     ch('请假完成分析，之后补训', .82, 'academy', {academy:3,ability:-1}, {academy:1,mentality:-1}, '你解释了实验结果，按时交稿，之后再补上基础训练。', '分析遇到了困难，你完成主要部分并向老师请教。', {study:true}),
+     ch('先训练，深夜赶报告', .5, 'mentality', {ability:1,academy:1,mentality:-2}, {academy:-3,mentality:-2}, '报告赶上了截止，但睡眠不足让你疲惫。', '疲劳中算错了数据，只能提交不完整的报告。'),
+     ch('拼凑别人的报告', .2, 'academy', {academy:-1,relation:-1}, {academy:-5,relation:-2}, '你暂时交上去了，却没有掌握课程内容，也欠了同学人情。', '相似内容被老师指出，你必须重做并接受批评。')]},
+  {id:'library_no_show', title:'图书馆预约失约', pressure:true, cond:s=>true,
+   desc:'你忘了取消座位预约，被暂停预约权限几天。原定的复习节奏被打乱，你打算怎么补救？',
+   choices:[
+     ch('去空教室按计划复习', .82, 'academy', {academy:3,mentality:-1}, {academy:1,mentality:-1}, '换地方有些折腾，但你完成了当天的学习目标。', '教室中途被占用，你完成了一部分任务。', {study:true}),
+     ch('先处理失约，再调整计划', .9, 'mentality', {academy:2,ability:-1}, {mentality:-1}, '你花时间理清规则，并把缺的复习时段补进日程。', '手续比预计复杂，你有些烦躁。'),
+     ch('这几天干脆不学了', .35, 'mentality', {mentality:1,academy:-3}, {academy:-4,mentality:-1}, '你暂时轻松了，课程进度却越落越远。', '拖延让你更焦虑，积压的任务也更多了。')]},
+  {id:'dorm_noise', title:'宿舍夜间噪音', pressure:true, cond:s=>true,
+   desc:'室友夜里连麦，明早你还要训练和上课。直接发火、忍着不说，都可能让事情更难办。',
+   choices:[
+     ch('商量安静时段', .82, 'relation', {relation:1,mentality:-1}, {relation:-1,mentality:-2}, '室友同意戴耳机，但今晚已经少睡了一会儿。', '没能谈妥，你和室友都带着情绪入睡。'),
+     ch('戴耳塞，明天再谈', .8, 'mentality', {mentality:1,ability:-1}, {ability:-1,academy:-1}, '你勉强休息了，晨训状态仍受影响。', '耳塞没挡住噪音，第二天训练和听课都走神。'),
+     ch('当场吵架', .3, 'mentality', {mentality:1,relation:-2}, {relation:-3,mentality:-2}, '噪音停了，但宿舍关系变得尴尬。', '争吵拖到更晚，大家谁都没休息好。')]},
+  {id:'volunteer_football', title:'校园志愿足球课', cond:s=>true,
+   desc:'校园志愿项目邀请院队给小朋友上足球课，需要提前设计安全、有趣的练习。',
+   choices:[
+     ch('设计游戏并共同授课', .85, 'relation', {relation:2,academy:2}, {mentality:-1}, '你学会把复杂动作讲简单，队友也发现了你的耐心。', '孩子们注意力分散，你得重新调整课堂。'),
+     ch('只负责动作示范', .8, 'ability', {ability:1,relation:1}, {ability:-1}, '重复示范让基本动作更扎实，也结识了志愿者。', '你练得比计划久，有些疲惫。'),
+     ch('答应后临时放鸽子', .2, 'relation', {mentality:1,relation:-2}, {relation:-4}, '队友替你补了位，但下次不愿再找你合作。', '课程临时缺人，负责人和队友都很失望。')]},
+  {id:'winning_complacency', title:'连胜后的松懈', pressure:true, cond:s=>s.stats.ability>=75 || s.stats.relation>=75,
+   desc:'最近训练对抗连续获胜，你觉得基本功训练越来越无聊。教练却提醒大家别把状态当成保证。',
+   choices:[
+     ch('承认短板，减量打磨细节', .8, 'academy', {ability:1,mentality:-1}, {ability:-1,mentality:-1}, '细节训练让你看清不足，但面对短板不太舒服。', '问题比想象中难改，近期状态仍有回落。'),
+     ch('提醒队友一起复盘', .75, 'relation', {relation:1,ability:-1}, {relation:-2,mentality:-1}, '大家愿意听你提醒，但讨论挤占了你的个人训练。', '你的措辞像说教，队友有些反感。'),
+     ch('靠老本，少练几次', .3, 'ability', {mentality:1,ability:-2}, {ability:-4,relation:-2}, '你轻松了一阵，脚下精度却下滑了。', '对抗中连续失误，教练和队友都发现你在松懈。')]}
+];
+REGULAR_EVENTS.push(...CAMPUS_EVENTS);
+
+const STUDY_CHOICES = {
+  exam_week:['熬夜复习','找学长划重点'], fail_crisis:['找老师补课','自己啃教材'],
+  scholarship:['冲刺学业'], team_bonding:['请假自习'], exam_vs_match:['参加考试']
+};
+for(const ev of REGULAR_EVENTS){
+  for(const c of ev.choices){
+    if((STUDY_CHOICES[ev.id] || []).includes(c.text)){
+      c.study = true;
+      c.good = {...c.good, academy: Math.max(c.good.academy || 0, 3)};
+    }
+  }
+}
+
 function hasAcademyBoost(ev){
   return (ev.choices || []).some(c => (c.good && c.good.academy > 0) || (c.effect && c.effect.academy > 0));
 }
@@ -1306,18 +1457,47 @@ function isAcademicEvent(ev){
 }
 function ensureAcademicEvents(shuffled, before, after, target){
   const combined = [...before, ...after];
-  let count = combined.filter(isAcademicEvent).length;
-  if(count >= target) return;
-  const candidates = shuffled.filter(e => isAcademicEvent(e) && !combined.includes(e));
+  const selected = new Set(combined.map(e => e.id));
+  const isStudy = e => (e.choices || []).some(c => c.study && c.good && c.good.academy > 0);
+  let count = combined.filter(isStudy).length;
+  const candidates = shuffled.filter(e => isStudy(e) && !selected.has(e.id));
   for(let i = combined.length - 1; i >= 0 && count < target && candidates.length; i--){
-    if(!isAcademicEvent(combined[i])){
-      combined[i] = { tag:'常规事件', ...candidates.shift() };
-      count++;
+    if(!isStudy(combined[i]) && !combined[i].pressure){
+      const next = candidates.shift();
+      selected.delete(combined[i].id); selected.add(next.id);
+      combined[i] = {tag:'常规事件', ...next}; count++;
     }
   }
-  before.splice(0, before.length, ...combined.slice(0, before.length));
-  after.splice(0, after.length, ...combined.slice(before.length));
+  const cut = before.length;
+  before.splice(0, before.length, ...combined.slice(0, cut));
+  after.splice(0, after.length, ...combined.slice(cut));
 }
+
+function rememberEvent(ev){
+  if(ev.id && !ev.stayUpChain) state.eventHistory[ev.id] = state.calendarYear;
+}
+function freshEventPool(pool){
+  const year = state.calendarYear || 2026;
+  const fresh = pool.filter(e => state.eventHistory[e.id] == null || year - state.eventHistory[e.id] > 1);
+  // Prefer unseen events; a small conditional pool may reuse the oldest ones.
+  const fallback = pool.filter(e => !fresh.includes(e)).sort((a,b) => state.eventHistory[a.id] - state.eventHistory[b.id]);
+  return [...weightedShuffle(fresh, eventDrawWeight), ...fallback];
+}
+function regularYearEvents(count, studyTarget){
+  const pool = REGULAR_EVENTS.filter(e => e.cond(state) || (e.coachOnly && state.isCaptain && state.year >= 2)).map(adaptEventForPlayer);
+  const shuffled = freshEventPool(pool);
+  const selected = shuffled.slice(0, count).map(e => ({tag:'常规事件', ...e}));
+  const reliablePressure = e => e.pressure && !e.coachOnly && e.id !== 'winning_complacency';
+  if(!selected.some(reliablePressure)){
+    const pressure = shuffled.find(reliablePressure);
+    if(pressure) selected[selected.length - 1] = {tag:'常规事件', ...pressure};
+  }
+  const before = selected.slice(0, Math.round(count * 2 / 3));
+  const after = selected.slice(before.length);
+  ensureAcademicEvents(shuffled, before, after, studyTarget);
+  return {before, after};
+}
+
 /* 加权随机排序：权重越高越容易被抽中 */
 function weightedShuffle(list, weightFn){
   const items = list.slice(), out = [];
@@ -1338,7 +1518,7 @@ const CLINICAL_EVENT_IDS = ['morning_rounds','night_shift','doctor_fan','first_d
 const CLINICAL_GRAD_EVENT_WEIGHT = 2.5;
 function isGradStage(s){
   const t = s || state;
-  return t.year >= (t.medical ? 5 : 4);
+  return inGrad(t) && t.year >= undergraduateYears(t);
 }
 function eventDrawWeight(ev){
   let w = 1;
@@ -1374,7 +1554,8 @@ function adaptEventForPlayer(ev){
     choices: ev.choices.map(c => ({
       ...c,
       prob: undefined,
-      probFn: s => clamp((c.probFn ? c.probFn(s) : (c.prob ?? 0.7)) * TONGJI_EXAM_PROB_SCALE, 0.05, 0.95)
+      probFn: s => c.probFn ? c.probFn(s) : (c.prob ?? 0.7),
+      examProbScale: TONGJI_EXAM_PROB_SCALE
     }))
   };
 }
@@ -1568,6 +1749,7 @@ function isBioPharmacy(s){
 /* 学业值低于 55 时，每次事件抉择额外扣心态；返回是否触发
    「放弃挣扎」判定成功后免疫该效果与退学结局 */
 function bioPharmacyChoiceDrain(){
+  if(isEasyMode()) return false;
   if(!isBioPharmacy()) return false;
   if(state.flags.academicWarningHandled) return false;
   if(state.stats.academy >= BIO_PHARMACY_LOW_ACADEMY) return false;
@@ -1579,6 +1761,7 @@ function lowAcademyTipHTML(drained){
 }
 /* 心态跌破 35：直接进入坏结局 */
 function bioPharmacyBreakdown(){
+  if(isEasyMode()) return false;
   if(!isBioPharmacy()) return false;
   if(state.flags.academicWarningHandled) return false;
   if(state.stats.mentality >= BIO_PHARMACY_BREAKDOWN_MENTALITY) return false;
@@ -1619,7 +1802,7 @@ function militaryEvent(s){
   return {tag:'服役 · 年度选择', title:'保留学籍 · 参军服役', auto:false,
     desc:'学校开始征兵工作。你可以选择服役两年，服役期间保留原学籍，两年后返回原年级继续学业。',
     choices:[
-      {text:'选择服役两年', detail:'50%：学业+3、能力+3；50%：学业-2、能力+6；另有90%概率：返校后两年伤病概率极低', effect:{}, result:'', serviceYears:2, resolve:s=>{
+      {text:'选择服役两年', detail:'基础结果（实际收益随当前数值递减）：50% 学业+3、能力+3；50% 学业-2、能力+6；另有90%概率返校后两年伤病概率极低', effect:{}, result:'', serviceYears:2, resolve:s=>{
           s.flags.militaryServed = true;
           s.militaryLowInjury = Math.random() < 0.9;
           if(Math.random() < 0.5){
@@ -1973,30 +2156,66 @@ function randomSpecialEvents(s){
 
 /* ---- 比赛基础模拟 ---- */
 function poisson(lambda){
-  lambda = Math.max(0.01, lambda);
+  lambda = Math.max(0, lambda);
+  if(lambda === 0) return 0;
   const L = Math.exp(-lambda);
   let k = 0, p = 1;
   do { k++; p *= Math.random(); } while(p > L);
   return k - 1;
 }
 /* 依据两队强度模拟基础比分 */
-function simulateBaseScore(sA, sB){
+function simulateBaseScore(sA, sB, homeConcedeFactor=1, awayConcedeFactor=1){
   const diff = clamp(sA - sB, -35, 35);
   const eA = clamp(1.35 + diff * 0.028, 0.4, 2.9);
   const eB = clamp(1.35 - diff * 0.028, 0.4, 2.9);
-  return { a: poisson(eA), b: poisson(eB) };
+  return { a: poisson(eA * awayConcedeFactor), b: poisson(eB * homeConcedeFactor) };
+}
+/* 高能力门将降低对手进球期望；缺席、教练和其他球队的比赛不受影响。 */
+function goalkeeperConcedeFactor(t=tourney){
+  if(state.position !== '门将' || !t || t.role !== 'player' || t.playerUnavailable ||
+      !t.currentMatch || ![t.currentMatch.home,t.currentMatch.away].includes(state.team.name)) return 1;
+  const reduction = clamp((state.stats.ability - 70) / 30, 0, 1) * 0.5;
+  return 1 - reduction * (state.squadRole === '替补' ? 0.65 : 1);
+}
+/* 只记录本队实际比赛的常规时间比分；点球大战与其他队比赛不计入。 */
+function recordGoalkeeperMatch(t, match, conceded){
+  if(state.position !== '门将' || t.role !== 'player' || match.keeperRecordCounted ||
+      ![match.home,match.away].includes(state.team.name)) return;
+  match.keeperRecordCounted = true;
+  const record = t.keeperRecord || (t.keeperRecord = {conceded:0, appearances:0, finalPlayed:false});
+  record.conceded += conceded;
+  if(!t.playerUnavailable) record.appearances++;
+  if(t.stage === 'super_final' || (t.stage === 'knockout' &&
+      t.knockoutRounds && t.koRoundIdx === t.knockoutRounds.length - 1)) record.finalPlayed = true;
+}
+function awardGoldenGlove(t){
+  const record = t.keeperRecord;
+  const earned = state.position === '门将' && t.role === 'player' && record &&
+    record.appearances > 0 && record.finalPlayed && record.conceded <= 2;
+  if(earned){
+    if(!state.flags.goldenGlove) addLog(`金手套 · ${t.type}打入决赛，累计丢球 ${record.conceded}（不含点球大战）`);
+    state.flags.goldenGlove = true;
+  }
+  return !!earned;
+}
+function goalkeeperTournamentHTML(t, earned){
+  if(state.position !== '门将' || t.role !== 'player' || !t.keeperRecord) return '';
+  return `<div class="result" style="margin-top:8px;">本届赛事球队累计丢球 <b>${t.keeperRecord.conceded}</b>（不含点球大战）。${earned ? '🧤 达成「金手套」条件！' : ''}</div>`;
 }
 /* 玩家单场进球期望（位置 + 四维表现） */
 function playerGoalExpectation(){
   const perf = performance(state.stats);
-  const posBase = {前锋:0.55, 中场:0.30, 后卫:0.12, 门将:0.01}[state.position] || 0.30;
+  const position = {
+    前锋:{base:0.55, perfBonus:0.008}, 中场:{base:0.30, perfBonus:0.008},
+    后卫:{base:0.06, perfBonus:0.002}, 门将:{base:0.002, perfBonus:0.00005}
+  }[state.position] || {base:0.30, perfBonus:0.008};
   const roleScale = state.squadRole === '替补' ? 0.65 : 1;
-  return clamp((posBase + (perf - 60) * 0.008) * roleScale, 0, 1.6);
+  return clamp((position.base + (perf - 60) * position.perfBonus) * roleScale, 0, 1.6);
 }
 /* 点球大战（淘汰赛常规时间打平直接点球） */
 function penaltyShootout(sA, sB){
   const win = Math.random() < clamp(0.5 + (sA - sB) * 0.012, 0.25, 0.75);
-  const took = state.position !== '门将' && Math.random() < 0.65;
+  const took = state.position !== '门将' && tourney && tourney.role !== 'coach' && !tourney.playerUnavailable && Math.random() < 0.65;
   let scored = false;
   if(took){
     const p = clamp(0.6 + (state.stats.ability - 60) * 0.006 + (state.stats.mentality - 60) * 0.004, 0.3, 0.92);
@@ -2014,10 +2233,23 @@ function mch(text, prob, stat, good, bad, mGood, mBad, goodText, badText){
 function rollMatchChoice(c){
   const key = c.stat || 'mentality';
   const sv = clamp(state.stats[key] ?? 60, 0, 100);
-  const p = c.probFn ? clamp(c.probFn(state), 0.05, 0.95) : clamp((c.prob ?? 0.7) + (sv - 60) * 0.006, 0.12, 0.95);
+  let p = c.probFn ? clamp(c.probFn(state), 0.05, 0.95) : clamp((c.prob ?? 0.7) + (sv - 60) * 0.006, 0.12, 0.95);
+  // 降低本人射门的成功概率；防守、组织和队友进球选项保持原规则。
+  if(c.mGood && c.mGood.playerGoal && (!tourney || tourney.role !== 'coach')){
+    p *= state.position === '门将' ? 0.02 : state.position === '后卫' ? 0.55 : 1;
+  }
   const success = Math.random() < p;
-  const m = success ? (c.mGood || {}) : (c.mBad || {});
-  return { success, m: m || {}, text: success ? (c.goodText || '') : (c.badText || '') };
+  const m = {...(success ? (c.mGood || {}) : (c.mBad || {}))};
+  let text = success ? (c.goodText || '') : (c.badText || '');
+  const factor = tourney?.keeperConcedeFactor ?? 1;
+  if(m.conc > 0 && factor < 1){
+    const shots = m.conc;
+    m.conc = Array.from({length:shots},()=>Math.random() < factor ? 1 : 0).reduce((a,b)=>a+b,0);
+    if(m.conc < shots) text = m.conc === 0
+      ? '球队防线被突破，但你凭借出色的门将能力扑出了对手的射门，化解了失球危机。'
+      : `对手连续制造险情，你凭借出色的门将能力化解了其中 ${shots-m.conc} 次，球队仍丢了 ${m.conc} 球。`;
+  }
+  return { success, m, text };
 }
 /* 比赛事件池：教练身份（队长带新生队）使用教练事件库 */
 function matchEventPool(){
@@ -2269,6 +2501,8 @@ const BETWEEN_MATCH_EVENTS = [
   }
 ];
 
+BETWEEN_MATCH_EVENTS.forEach(ev => { ev.id = 'between:' + ev.title; });
+
 function rollEasterEgg(){
   const weiChance = state.flags.metWeiShihao ? 0 : 0.05;
   const xuChance = state.flags.metXuBin ? 0 : 0.05;
@@ -2279,6 +2513,8 @@ function rollEasterEgg(){
 }
 
 function showEasterEgg(ev, onDone){
+  rerenderEvent = ()=>showEasterEgg(ev, onDone);
+  $('revealChoices').checked = !!state.showChoiceDetails;
   if(ev.name === '韦世豪') state.flags.metWeiShihao = true;
   if(ev.name === '徐彬') state.flags.metXuBin = true;
   show('scr-event');
@@ -2331,10 +2567,24 @@ function rollBetweenMatchEvent(){
   if(Math.random() >= 0.35) return null;
   const pool = BETWEEN_MATCH_EVENTS.filter(e => !e.only || e.only === tourney.type);
   if(!pool.length) return null;
-  return weightedShuffle(pool, eventDrawWeight)[0];
+  return freshEventPool(pool)[0];
+}
+
+function heavyDefeatEvent(myGoals, oppGoals){
+  return {id:'heavy_defeat_adjustment', tag:'赛后 · 逆境抉择', title:'大败后的调整',
+    desc:`本场比分 ${myGoals} : ${oppGoals}，你们净负 ${oppGoals-myGoals} 球。队伍气氛低落，下一步需要一个清楚的调整计划。`,
+    choices:[
+      ch('拆解失误，安排针对训练', .75, 'academy', {ability:2,mentality:-1}, {ability:-1,mentality:-2}, '你们找到了站位和配合问题，训练有了重点，但面对失误仍有压力。', '复盘没能找到共同结论，大家暂时更沮丧了。'),
+      ch('先沟通，避免互相甩锅', .8, 'relation', {relation:2,mentality:1}, {relation:-2,mentality:-1}, '大家承认各自的责任，愿意一起把下一次训练做好。', '情绪还没平复，沟通变成了争论。'),
+      ch('恢复休息，按计划补上学习', .85, 'mentality', {academy:2,mentality:1,ability:-1}, {mentality:-1,academy:1}, '你们留出恢复时间，你也完成了落下的课程任务，稍后再恢复训练。', '失利仍让你分心，你只完成了部分任务。'),
+      ch('用翻倍加练惩罚自己', .4, 'ability', {ability:2,mentality:-2,academy:-2}, {ability:-3,mentality:-3,academy:-2}, '你完成了训练，却透支了恢复和复习时间。', '盲目加量让动作质量下降，疲劳和焦虑一起加重。')]
+  };
 }
 
 function showBetweenMatchEvent(ev, onDone){
+  rerenderEvent = ()=>showBetweenMatchEvent(ev, onDone);
+  $('revealChoices').checked = !!state.showChoiceDetails;
+  rememberEvent(ev);
   show('scr-event');
   $('evNum').textContent = state.number;
   $('evName').textContent = state.name;
@@ -2351,14 +2601,23 @@ function showBetweenMatchEvent(ev, onDone){
   ev.choices.forEach(c=>{
     const btn = document.createElement('button');
     btn.className = 'choice';
-    btn.textContent = c.text;
+    const detail = state.showChoiceDetails ? choiceDetailText(c) : '';
+    btn.innerHTML = `${c.text}${detail ? `<small class="reveal-detail">${detail}</small>` : ''}`;
     btn.onclick = ()=>{
       addLog(`${ev.title}：${c.text}`);
       let eff = c.effect || {};
       let result = c.result || '';
       const drained = bioPharmacyChoiceDrain();
+      if(c.stayUp) state.flags.stayUpChain = true;
+      if(c.prob != null || c.probFn){
+        const roll = applyChoiceRisk(c, rollChoice(c));
+        eff = roll.effects; result = roll.text;
+        if(roll.success && c.onSuccess) c.onSuccess(state);
+        if(!roll.success && c.onFail) c.onFail(state);
+      }
       if(c.resolve){ const r = c.resolve(state); eff = r.effect || eff; result = r.result || result; }
       const actual = applyStats(eff);
+      $('evStats').innerHTML = statBarHTML();
       checkAchievements(state);
       if(bioPharmacyBreakdown()) return;
       box.innerHTML = `<div class="result">${result || '……'}</div>${actual && Object.keys(actual).length ? `<div class="delta">${effectText(actual)}</div>` : ''}${lowAcademyTipHTML(drained)}<button class="btn" id="betweenNext">继续</button>`;
@@ -2380,7 +2639,8 @@ function launchSuperCup(preview){
     superPreview: preview,
     first: { home:c.yi, away:c.tongji },
     final: { home:null, away:c.jia },
-    playerGoals:0, playerYellows:0
+    playerGoals:0, playerYellows:0,
+    keeperRecord:{conceded:0, appearances:0, finalPlayed:false}
   };
 
   if(myRound === -1){
@@ -2422,6 +2682,8 @@ function afterSuperMatch(){
 
 function finishSuperCup(champion){
   const t = tourney;
+  const goldenGlove = awardGoldenGlove(t);
+  checkAchievements(state);
   const myName = state.team.name;
   const playerWon = champion === myName && t.superRound >= 0;
   let eff = {};
@@ -2429,7 +2691,7 @@ function finishSuperCup(champion){
     state.flags.superCupChampion = true;
     state.championColleges[state.team.name] = true;
     eff = { mentality:5, relation:5, ability:1 };
-    applyStats(eff);
+    eff = applyStats(eff);
     checkAchievements(state);
     postMedia('fans', `${state.name} 率队夺得超级杯冠军，球迷群彻底沸腾！`, {fans:12});
     postMedia('officials', `HUSTFootball：${state.name} 代表 ${state.team.name} 夺得超级杯冠军！`, {officials:10});
@@ -2440,13 +2702,14 @@ function finishSuperCup(champion){
   show('scr-match');
   $('mStats').innerHTML = statBarHTML();
   $('mHeader').innerHTML = `<div class="sectitle">超级杯 · 赛事收官</div><div class="m-title">${champion} 夺冠</div>`;
-  $('mBody').innerHTML = `<div class="result">${playerWon ? `你们捧起了超级杯冠军奖杯！` : `${champion} 获得超级杯冠军。`}</div>${eff && Object.keys(eff).length ? `<div class="delta">${effectText(eff)}</div>` : ''}`;
+  $('mBody').innerHTML = `<div class="result">${playerWon ? `你们捧起了超级杯冠军奖杯！` : `${champion} 获得超级杯冠军。`}</div>${goalkeeperTournamentHTML(t,goldenGlove)}${eff && Object.keys(eff).length ? `<div class="delta">${effectText(eff)}</div>` : ''}`;
   $('mActions').innerHTML = `<button class="btn gold" id="mBtn1">继续</button>`;
   $('mBtn1').onclick = ()=>{ tourney = null; processQueue(); };
 }
 
 /* 启动一场赛事 */
 function launchTournament(type, role, onDone){
+  if(type === '新生杯' && role === 'coach') state.flags.freshmanCoach = true;
   let league = state.league;
   let teams;
   if(type === '华工杯'){
@@ -2474,6 +2737,7 @@ function launchTournament(type, role, onDone){
     playerGoals: 0, playerAssists: 0,
     playerYellows: 0,
     playerMadeSquad: false,
+    keeperRecord:{conceded:0, appearances:0, finalPlayed:false},
     stage: 'group',
     knockoutRounds: null, koRoundIdx: 0, koMatchIdx: 0,
     matchMin: 0, liveHome: 0, liveAway: 0,
@@ -2491,6 +2755,7 @@ function leagueDisplayName(league){
 
 function renderMatchIntro(){
   const t = tourney;
+  if(isFastMode()){ nextPlayerMatch(); return; }
   $('mStats').innerHTML = statBarHTML();
   const leagueLabel = leagueDisplayName(t.league);
   $('mHeader').innerHTML = `
@@ -2498,7 +2763,7 @@ function renderMatchIntro(){
     <div class="m-title">${t.type}</div>
     <div class="m-sub">${t.type === '华工杯' ? (t.league === '同济组' ? 'Tongji Medical College of HUST · 8 队分 2 组 · 每组前 2 进半决赛 · 冠军获得医学球王荣誉' : (t.league === '甲组' ? '12 队 · 2 组单循环 · 每组前 4 进八强 · 末两名打保级附加赛' : '17 队 · 3×4队组+1×5队组 · 每组前 2 出线打八强')) : '35 队 · 8 组（3×5队+5×4队）· 每组前 2 出线进 16 强'}</div>`;
   $('mBody').innerHTML = `<div class="m-group">${renderGroupBox(t.myGroup)}</div>
-    <div class="result" style="margin-top:12px;">${t.league === '同济组' ? '华工杯同济医学院（Tongji Medical College of HUST）组 8 队分两组，每组前 2 名出线，随后进行半决赛和决赛。冠军将获得“医学球王”荣誉。' : `你所在的 <b>${t.myGroup.name}</b> 共有 ${t.myGroup.teams.length} 支球队，单循环后前 2 名出线。`}每场小组赛你将做出 1-2 次关键抉择。</div>
+    <div class="result" style="margin-top:12px;">${t.league === '同济组' ? '华工杯同济医学院（Tongji Medical College of HUST）组 8 队分两组，每组前 2 名出线，随后进行半决赛和决赛。冠军将获得“医学球王”荣誉。' : `你所在的 <b>${t.myGroup.name}</b> 共有 ${t.myGroup.teams.length} 支球队，单循环后前 ${t.type === '华工杯' && t.league === '甲组' ? 4 : 2} 名出线。`}每场小组赛你将做出 1-2 次关键抉择。</div>
     ${t.medicalRep ? `<div class="result" style="margin-top:8px;">第一临床学院和第二临床学院没有独立的主校区参赛身份，这项赛事以 <b>基础医学院</b> 的名义出战。</div>` : ''}`;
   $('mActions').innerHTML = `<button class="btn gold" id="mBtn1">开始小组赛</button>`;
   $('mBtn1').onclick = ()=>{ nextPlayerMatch(); };
@@ -2553,21 +2818,24 @@ function finishGroupStage(){
       ? `你以小组第 ${myRank + 1} 名的成绩${t.type==='华工杯' && t.league==='甲组' ? '晋级八强' : '出线'}！淘汰赛一场定胜负，常规时间打平将直接点球大战。`
       : `你所在的球队小组赛被淘汰（第 ${myRank + 1} 名），本届${t.type}之旅到此为止。`}</div>`;
   if(adv){
+    if(isFastMode()){ nextKnockoutMatch(); return; }
     $('mActions').innerHTML = `<button class="btn gold" id="mBtn1">进入淘汰赛</button>`;
     $('mBtn1').onclick = ()=>{ nextKnockoutMatch(); };
   } else {
     // 小组未出线：其余淘汰赛自动模拟（仅生成冠军叙事），直接结算
     t.stage = 'eliminated';
     simulateRemainingKo();
+    if(isFastMode()){ finishTournament(); return; }
     $('mActions').innerHTML = `<button class="btn" id="mBtn1">查看结果</button>`;
     $('mBtn1').onclick = ()=>{ finishTournament(); };
   }
 }
 
 function tableHTML(table, myRank){
+  const places = tourney && tourney.type === '华工杯' && tourney.league === '甲组' ? 4 : 2;
   const header = `<div class="m-trow m-th"><span>球队</span><span>赛</span><span>胜</span><span>平</span><span>负</span><span>进/失</span><span>分</span></div>`;
   const rows = table.map((r,i)=>`
-    <div class="m-trow${i === myRank ? ' mine' : ''}${i < 2 ? ' q' : ''}">
+    <div class="m-trow${i === myRank ? ' mine' : ''}${i < places ? ' q' : ''}">
       <span>${r.team}${i === myRank ? '（我）' : ''}</span><span>${r.p}</span><span>${r.w}</span><span>${r.d}</span><span>${r.l}</span><span>${r.gf}/${r.ga}</span><span>${r.pts}</span>
     </div>`).join('');
   return header + rows;
@@ -2703,6 +2971,7 @@ function renderMatchModeChoice(match, isKey){
   const myName = state.team.name;
   const opp = match.home === myName ? match.away : match.home;
   const unavailable = playerUnavailableReason(t.role);
+  if(isFastMode()){ simulateMatch(match, isKey, !!unavailable); return; }
   show('scr-match');
   $('mStats').innerHTML = statBarHTML();
   $('mHeader').innerHTML = `
@@ -2736,7 +3005,9 @@ function prepareMatch(match, isKey, unavailable=false){
   const myName = state.team.name;
   const opp = match.home === myName ? match.away : match.home;
   const sA = teamStrength(match.home), sB = teamStrength(match.away);
-  const base = simulateBaseScore(sA, sB);
+  t.keeperConcedeFactor = goalkeeperConcedeFactor(t);
+  const base = simulateBaseScore(sA, sB, match.home === myName ? t.keeperConcedeFactor : 1,
+    match.away === myName ? t.keeperConcedeFactor : 1);
   t.baseHome = base.a; t.baseAway = base.b;
   t.liveHome = 0; t.liveAway = 0;  // 特写模式从 0 累计
   t.matchOpponent = opp;
@@ -2748,19 +3019,20 @@ function prepareMatch(match, isKey, unavailable=false){
     const count = cap / 10;  // 6 或 8
     t.keyQueue = [];
     for(let i = 0; i < count; i++){
-      t.keyQueue.push({ minute: (i + 1) * 10, event: pick(matchEventPool()), resolved: false, swingH: 0, swingA: 0 });
+      t.keyQueue.push({ minute: (i + 1) * 10, event: null, resolved: false, swingH: 0, swingA: 0 });
     }
     t.keyIdx = 0;
-    renderMatchKeyEvent();
   } else {
     // 正常赛：1-2 个关键事件
     const n = randInt(1, 2);
     t.keyQueue = [];
     for(let i = 0; i < n; i++){
-      t.keyQueue.push({ minute: randInt(10, t.minuteCap), event: pick(matchEventPool()), resolved: false, swingH: 0, swingA: 0 });
+      t.keyQueue.push({ minute: randInt(10, t.minuteCap), event: null, resolved: false, swingH: 0, swingA: 0 });
     }
     t.keyIdx = 0;
   }
+  const pool = weightedShuffle(matchEventPool(), () => 1);
+  t.keyQueue.forEach((k,i) => { k.event = pool[i % pool.length]; });
   t.keyIdx = 0;
 }
 
@@ -2958,6 +3230,7 @@ function finishMatch(){
   }
 
   // 展示比赛结果
+  recordGoalkeeperMatch(t, m, oppGoals);
   show('scr-match');
   const opp = t.matchOpponent;
   const isKO = (t.stage === 'knockout' || t.stage === 'relegation' || isSuperStage);
@@ -2985,12 +3258,18 @@ function finishMatch(){
     else if(isSuperStage){ afterSuperMatch(); }
     else { afterKnockoutMatch(); }
   };
-  $('mBtn1').onclick = ()=>{
+  let adjustmentDone = false;
+  const advance = ()=>{
+    if(myGoals - oppGoals <= -3 && !adjustmentDone){
+      adjustmentDone = true;
+      showBetweenMatchEvent(heavyDefeatEvent(myGoals, oppGoals), advance);
+      return;
+    }
     if(t.type === '华工杯' && t.easterEgg && !t.easterEggShown){
       t.easterEggShown = true;
       showEasterEgg(t.easterEgg, continueMatch);
     } else {
-      if(!t.interEventShown && hasUpcomingPlayerMatch()){
+      if(!isFastMode() && !t.interEventShown && hasUpcomingPlayerMatch()){
         t.interEventShown = true;
         const inter = rollBetweenMatchEvent();
         if(inter){
@@ -3001,6 +3280,8 @@ function finishMatch(){
       continueMatch();
     }
   };
+  $('mBtn1').onclick = advance;
+  if(isFastMode()) advance();
 }
 
 function afterKnockoutMatch(){
@@ -3009,12 +3290,14 @@ function afterKnockoutMatch(){
   // 我方已打本场，若被淘汰则模拟剩余；否则继续本轮的其它我方比赛（应只有一场）→ 进入下一轮
   if(m.winner !== state.team.name){
     t.myFinish = roundNameFor(t.koRoundIdx);
+    const finishLabel = t.myFinish;
     simulateRemainingKo();
+    if(isFastMode()){ finishTournament(); return; }
     // 展示淘汰结算
     const opp = t.matchOpponent;
     show('scr-match');
-    $('mHeader').innerHTML = `<div class="sectitle">${t.type} · 淘汰</div><div class="m-title">${roundNameFor(t.koRoundIdx)} 止步</div>`;
-    $('mBody').innerHTML = `<div class="result">你所在的球队在${roundNameFor(t.koRoundIdx)}不敌 ${opp}，本届${t.type}之旅遗憾终结。</div>`;
+    $('mHeader').innerHTML = `<div class="sectitle">${t.type} · 淘汰</div><div class="m-title">${finishLabel} 止步</div>`;
+    $('mBody').innerHTML = `<div class="result">你所在的球队在${finishLabel}不敌 ${opp}，本届${t.type}之旅遗憾终结。</div>`;
     $('mActions').innerHTML = `<button class="btn gold" id="mBtn1">查看结果</button>`;
     $('mBtn1').onclick = ()=>{ finishTournament(); };
     return;
@@ -3026,6 +3309,8 @@ function afterKnockoutMatch(){
 /* ---- 赛事收官：名次判定 + 结果反作用 ---- */
 function finishTournament(){
   const t = tourney;
+  const goldenGlove = awardGoldenGlove(t);
+  checkAchievements(state);
   const myName = state.team.name;
   if(t.type === '华工杯'){
     if(t.role !== 'coach' && t.playerMadeSquad) state.cupSeasonCount++;
@@ -3119,7 +3404,7 @@ function finishTournament(){
   show('scr-match');
   $('mStats').innerHTML = statBarHTML();
   $('mHeader').innerHTML = `<div class="sectitle">${t.type} · 赛事收官</div><div class="m-title">${result.title}</div>`;
-  $('mBody').innerHTML = `<div class="result">${result.prose}</div>${deltaHtml}`;
+  $('mBody').innerHTML = `<div class="result">${result.prose}</div>${goalkeeperTournamentHTML(t,goldenGlove)}${deltaHtml}`;
   $('mActions').innerHTML = `<button class="btn gold" id="mBtn1">继续</button>`;
   $('mBtn1').onclick = ()=>{
     applyStats(result.eff);
@@ -3156,6 +3441,7 @@ function startRelegationPlayoff(){
   const oppIdx = myIdx === 5 ? 4 : 5;   // 倒数第一 vs 对方倒数第二；倒数第二 vs 对方倒数第一
   const opp = otherTable[oppIdx].team;
   t.stage = 'relegation';
+  if(isFastMode()){ renderMatchModeChoice({home:state.team.name, away:opp}, true); return; }
   show('scr-match');
   $('mHeader').innerHTML = `<div class="sectitle">华工杯 · 甲组保级附加赛</div><div class="m-title">生死战</div>`;
   $('mBody').innerHTML = `<div class="result">你们小组赛位列第 ${myIdx + 1} 名，跌入保级附加赛。对手是 <b>${opp}</b>。单场定胜负——<b>输者降入乙组</b>！</div>`;
@@ -3168,6 +3454,7 @@ function afterRelegationMatch(){
   const m = t.currentMatch;
   const won = m.winner === state.team.name;
   t.relegated = !won;
+  if(isFastMode()){ finishTournament(); return; }
   show('scr-match');
   if(won){
     addLog('华工杯甲组 · 保级成功');
@@ -3958,14 +4245,34 @@ function determineEnding(s){
 /* ---------------- 年度结算（自然成长） ---------------- */
 function annualGrowth(s){
   const tier = potentialTier(s.potential);
-  const isA = s.year < 4 && s.league === '甲组';
+  const isA = s.year < undergraduateYears(s) && s.league === '甲组';
   const refereeCost = s.flags.referee ? 2 : 0;
   return {
-    ability: randInt(tier.min, tier.max) + (isA ? 2 : 0) - refereeCost,
-    mentality: isA ? -1 : 1,
-    relation: 1 + (s.flags.referee ? 1 : 0),
-    academy: -1,
+    ability: Math.ceil(randInt(tier.min, tier.max) * 0.5) + (isA ? 1 : 0) - refereeCost,
+    mentality: socialGrowthEffect(s, 'mentality', 82) + (isA ? -1 : 0),
+    relation: socialGrowthEffect(s, 'relation', 74) + (s.flags.referee ? 1 : 0),
+    academy: 1,
   };
+}
+
+/* 假期休整与离校联系变化：逐步恢复或回落，不设置年末固定区间。 */
+function socialGrowthEffect(s, key, center){
+  if(s.gameMode === 'easy') return 0;
+  const delta = (center - s.stats[key]) * 0.65;
+  // 与日常收益共用结算器；补偿正收益衰减，使年度恢复保持渐进速度。
+  const factor = delta > 0 ? statEffectFactor(key, s.stats[key], true) : 1;
+  return delta / factor;
+}
+
+/* 年度成长只结算一次；服役与休学中断不计为完成学年。 */
+function settleYearStats(){
+  if(state.lastSettledCampusYear === state.calendarYear){
+    return {growth:{ability:0, mentality:0, relation:0, academy:0}};
+  }
+  const growth = applyStats(annualGrowth(state));
+  state.completedCampusYears++;
+  state.lastSettledCampusYear = state.calendarYear;
+  return {growth};
 }
 
 /* ---------------- 渲染 ---------------- */
@@ -4176,7 +4483,8 @@ function milestonesHTML(){
 
 /* ---------------- 游戏流程 ---------------- */
 let queue = [];      // 本学年待处理事件
-let current = null;  // 当前事件
+let current = null;
+let rerenderEvent = null;  // 当前事件
 let yearResult = null;
 
 function initName(){
@@ -4278,6 +4586,10 @@ function chooseCollege(){
 }
 
 function assignTeam(chosenGroup, chosenName){
+  state.year = 0; state.path = 'undergrad'; state.isCaptain = false;
+  state.completedCampusYears = 0; state.lastSettledCampusYear = null;
+  state.gameMode = 'full'; state.eventHistory = {};
+  state.statRemainders = {ability:0, mentality:0, relation:0, academy:0};
   const group = chosenGroup || (Math.random()<0.5?'甲组':'乙组');
   const name = chosenName || pick(GROUPS[group]);
   state.team = { name, group };
@@ -4318,11 +4630,11 @@ function assignTeam(chosenGroup, chosenName){
   state.achievementScopeVersion = 2;
   state.achievementClaimed = false;
   state.achievementPromptShown = false;
-  state.flags = { bigInjury:false, jiaChampion:false, yiChampion:false, proTrial:false, extendGraduation:false, varsity:false, wasCaptain:false,
+  state.flags = { bigInjury:false, goldenGlove:false, jiaChampion:false, yiChampion:false, proTrial:false, extendGraduation:false, varsity:false, wasCaptain:false,
                   kaoyanFail:false, referee:false, refereeFinal:false, refereeL1Passed:false, refereeLeagueQualified:false,
                   militaryServed:false, transferAttempted:false, transferDone:false, transferExtended:false,
                   xinshengChampion:false, biyeChampion:false, crossExam:false, medicalSplit:false, medicalDirect:false, tongjiChampion:false,
-                  wentToField:false, superCupChampion:false, fruitBasket:false, trophyBlessing:false, worldCupPromise:false,
+                  wentToField:false, freshmanCoach:false, superCupChampion:false, fruitBasket:false, trophyBlessing:false, worldCupPromise:false,
                   metWeiShihao:false, metXuBin:false,
           pharmacyTrack:'', mentalBreakdown:false, academicWarningHandled:false,
           stayUpChain:false, stayUpPush:false, fatiguedMatch:false, warmedUpMatch:false };
@@ -4350,8 +4662,15 @@ function assignTeam(chosenGroup, chosenName){
     <div class="statrow"><span class="statlabel">球衣</span><span style="flex:1;color:var(--sub);">${state.number} 号</span></div>
     <p class="muted mt8" style="margin:0;">※ 天赋与成长速度因人而异，隐藏的表现值将决定你生涯的走向。</p>`;
   show('scr-team');
-  $('btnStart').onclick = ()=>{ renderMain(); show('scr-main'); };
+  const begin = mode => { state.gameMode = mode; renderMain(); show('scr-main'); };
+  $('btnStart').onclick = ()=>begin('full');
+  $('btnStartFast').onclick = ()=>begin('fast');
+  $('btnStartEasy').onclick = ()=>begin('easy');
 }
+
+function isEasyMode(){ return state.gameMode === 'easy'; }
+function isFastMode(){ return state.gameMode === 'fast' || isEasyMode(); }
+function gameModeName(){ return isEasyMode() ? '简单版' : isFastMode() ? '快速版' : '标准版'; }
 
 function renderMain(){
   // 球员卡
@@ -4360,7 +4679,7 @@ function renderMain(){
   $('mainCaptain').style.display = state.isCaptain?'inline-block':'none';
   $('mainReferee').style.display = state.flags.referee?'inline-block':'none';
   $('pcMeta').textContent = `${state.team.name} · ${state.league} · ${state.position} · ${state.squadRole}${state.flags.referee ? ' · ' + refereeLevelName(state) : ''}`;
-  $('pcTalent').textContent = `天赋：${potentialTier(state.potential).label}`;
+  $('pcTalent').textContent = `天赋：${potentialTier(state.potential).label} · ${gameModeName()}`;
   $('pcNum').textContent = state.number;
   // 顶栏年份
   $('mainYear').textContent = `${yearName(state.year, state.path)} · ${state.calendarYear || 2026}`;
@@ -4387,7 +4706,7 @@ function renderMain(){
 function hintText(){
   const p = performance(state.stats);
   const tier = perfGrade(p);
-  return `【球探悄悄话】你当前的综合表现处于「${tier}」。表现值由四维数值加权而成，它决定了你能触发的关键事件与最终结局。`;
+  return `【球探悄悄话】你当前的综合表现处于「${tier}」。表现值由四维数值加权而成，它决定了你能触发的关键事件与最终结局。主动学习更容易提升学业；训练、社交也需要付出时间。数值越高成长越慢，小额收益会逐次积累。`;
 }
 
 /* ---------------- 学年流程 ---------------- */
@@ -4431,29 +4750,31 @@ function startYear(){
   const isEnd = isEndMilestone(state);
   const ms = milestoneEvent(year, state);
   const capMs = captainMilestone(year, state);  // 队长换届（担任队长期间，年度开始触发）
-  // 常规事件：本科 8 个、深造 6 个；拆成两批——华工杯前多、华工杯后少
-  const n = year < 4 ? 8 : 6;
-  const nBefore = Math.round(n * 2 / 3);   // 本科 5 / 深造 4
-  const nAfter = n - nBefore;              // 本科 3 / 深造 2
-  const pool = REGULAR_EVENTS.filter(e=>e.cond(state)).map(adaptEventForPlayer);
-  const shuffled = weightedShuffle(pool, eventDrawWeight);
-  let regularBefore = shuffled.slice(0, nBefore).map(e=>({tag:'常规事件', ...e}));
-  let regularAfter = shuffled.slice(nBefore, n).map(e=>({tag:'常规事件', ...e}));
-  // 生物药学：学业值低于 55 时，本年必定出现一次「学业警告」（隐藏特性）
+  // 快速版只压缩日常操作，不跳过学制、赛事或人生节点。
+  const fullCount = isGradStage(state) ? 6 : 8;
+  const n = isFastMode() ? 4 : fullCount;
+  const academicTarget = isFastMode() ? 2 : (isGradStage(state) ? 3 : 4);
+  const regular = regularYearEvents(n, academicTarget);
+  let regularBefore = regular.before, regularAfter = regular.after;
   if(isBioPharmacy() && state.stats.academy < BIO_PHARMACY_LOW_ACADEMY){
     const picked = [...regularBefore, ...regularAfter];
     if(!picked.some(e => e.id === 'academic_warning')){
-      const warnEv = shuffled.find(e => e.id === 'academic_warning')
-        || adaptEventForPlayer(REGULAR_EVENTS.find(e => e.id === 'academic_warning'));
-      if(warnEv){
-        const slot = regularAfter.length ? regularAfter : regularBefore;
-        if(slot.length) slot[slot.length - 1] = { tag:'常规事件', ...warnEv };
+      const warning = REGULAR_EVENTS.find(e => e.id === 'academic_warning');
+      const canReplace = ev => {
+        const remaining = picked.filter(e => e !== ev);
+        return remaining.filter(e => (e.choices || []).some(c => c.study)).length >= academicTarget
+          && remaining.some(e => e.pressure);
+      };
+      const slot = picked.find(e => canReplace(e) && !e.pressure && !(e.choices || []).some(c => c.study))
+        || picked.find(canReplace);
+      if(warning && slot){
+        const list = regularBefore.includes(slot) ? regularBefore : regularAfter;
+        list[list.indexOf(slot)] = {tag:'常规事件', ...adaptEventForPlayer(warning)};
       }
     }
   }
-  // 每年至少安排 2-3 个会改变学业值的事件，避免某个学年完全碰不到学业抉择。
-  const academicTarget = year < 4 ? 3 : 2;
-  ensureAcademicEvents(shuffled, regularBefore, regularAfter, academicTarget);
+  for(const ev of [...regularBefore, ...regularAfter]) ev.timeScale = fullCount / n;
+
   // 随机特殊事件
   const randoms = randomSpecialEvents(state);
 
@@ -4558,6 +4879,8 @@ function processQueue(){
 }
 
 function renderEvent(ev){
+  rerenderEvent = ()=>renderEvent(ev);
+  rememberEvent(ev);
   show('scr-event');
   // 球员综合数据头
   $('evNum').textContent = state.number;
@@ -4571,14 +4894,14 @@ function renderEvent(ev){
   // 事件内容
   $('evTag').textContent = ev.tag || '事件';
   $('evTitle').textContent = ev.title;
-  $('evDesc').textContent = ev.desc;
+  $('evDesc').textContent = ev.desc + (ev.timeScale > 1 ? `（${gameModeName()}：本次日常抉择代表 ${ev.timeScale} 倍时段，四维收益与代价一并折算。）` : '');
   $('revealChoices').checked = !!state.showChoiceDetails;
   const box = $('evChoices'); box.innerHTML='';
   ev.choices.forEach((c,i)=>{
     const btn=document.createElement('button');
     btn.className='choice';
     const met = !c.cond || c.cond(state);
-    const detail = state.showChoiceDetails ? choiceDetailText(c) : '';
+    const detail = state.showChoiceDetails ? choiceDetailText(c, ev.timeScale || 1) : '';
     btn.innerHTML = `${c.text}${met ? '' : '（条件不足）'}${c.warn ? `<small>${c.warn}</small>` : ''}${detail ? `<small class="reveal-detail">${detail}</small>` : ''}`;
     if(!met){ btn.classList.add('disabled'); btn.disabled=true; }
     else { btn.onclick = ()=>chooseOption(ev, i); }
@@ -4662,6 +4985,8 @@ function choiceRollParams(c){
   const key = c.stat || 'mentality';
   const sv = clamp(state.stats[key] ?? 60, 0, 100);
   let p = c.fixed ? (c.prob ?? 0.7) : (c.probFn ? clamp(c.probFn(state), 0.05, 0.95) : clamp((c.prob ?? 0.7) + (sv - 60) * 0.006, 0.12, 0.95));
+  if(c.study && !c.fixed) p = clamp(p + 0.18, 0.55, 0.95);
+  if(c.examProbScale) p = clamp(p * c.examProbScale, 0.05, 0.95);
   // 生物药学：涉及学业变动的事件选项成功率降低 5%（隐藏特性）
   if(isBioPharmacy() && touchesAcademy(c)) p = clamp(p * BIO_PHARMACY_CHOICE_PROB_SCALE, 0.05, 0.95);
   // 生物药学：学业值低于 55 时，学业变动选项成功率提升 25%，上限 100%（隐藏特性）
@@ -4672,37 +4997,47 @@ function choiceRollParams(c){
   if(isBioPharmacy() && c.bioRedemption && state.stats.academy < BIO_PHARMACY_LOW_ACADEMY){
     p = Math.min(p + BIO_PHARMACY_REDEMPTION_BONUS, 1);
   }
-  const scale = c.fixed ? 1 : 0.8 + sv/100 * 0.7;   // 裁判班使用固定概率与固定效果；普通事件仍与基础数值关联
+  const scale = 1;   // 成功率受数值影响，收益统一在 applyStats 中衰减，避免双重放大。
   return { p, scale };
 }
 
 function scaledEffects(raw, scale){
   const effects = {};
-  for(const k in raw || {}){ effects[k] = Math.round(raw[k] * scale); }
+  for(const k in raw || {}){ effects[k] = raw[k] * scale; }
   return effects;
 }
 
-function choiceDetailText(c){
+function choiceDetailText(c, timeScale=1){
   if(c.detail) return c.detail;
   if(c.prob != null || c.probFn){
     const {p, scale} = choiceRollParams(c);
-    const good = balanceEffects(scaledEffects(c.good, scale));
-    const bad = balanceEffects(scaledEffects(c.bad, scale));
-    return `成功 ${Math.round(p*100)}%：${effectText(good) || '无变化'}；失败：${effectText(bad) || '无变化'}`;
+    const good = balanceEffects(scaledEffects(c.good, scale * timeScale));
+    const bad = balanceEffects(scaledEffects(c.bad, scale * timeScale));
+    const risk = c.risk === 'bigInjury' ? `；另有 ${(state.injuryShieldYears || 0) > 0 ? 2 : 8}% 伤情恶化并休学的风险` : '';
+    return `成功 ${Math.round(p*100)}%：${effectText(good) || '无变化'}；失败：${effectText(bad) || '无变化'}${risk}`;
   }
   if(c.effect && Object.keys(c.effect).length){
-    return `确定结果：${effectText(balanceEffects(c.effect))}`;
+    return `确定结果：${effectText(balanceEffects(scaledEffects(c.effect, timeScale)))}`;
   }
   if(c.resolve) return '结果由动态概率决定';
   return '';
 }
 
-function rollChoice(c){
+function rollChoice(c, timeScale=1){
   const {p, scale} = choiceRollParams(c);
   const success = Math.random() < p;
   const raw = success ? (c.good || {}) : (c.bad || {});
-  const effects = scaledEffects(raw, scale);
+  const effects = scaledEffects(raw, scale * timeScale);
   return { success, effects, text: success ? (c.goodText || '') : (c.badText || '') };
+}
+
+function applyChoiceRisk(c, roll){
+  if(c.risk === 'bigInjury' && Math.random() < ((state.injuryShieldYears || 0) > 0 ? 0.02 : 0.08)){
+    state.flags.bigInjury = true; state.repeatYear = true;
+    roll.effects = {...roll.effects, ability:(roll.effects.ability || 0)-5, mentality:(roll.effects.mentality || 0)-2};
+    roll.text += '（伤情突然恶化，你不得不接受手术，休学一年……）';
+  }
+  return roll;
 }
 
 function chooseOption(ev, i){
@@ -4720,7 +5055,7 @@ function chooseOption(ev, i){
 
   // 概率选项（新格式）
   if(c.prob != null || c.probFn){
-    const roll = rollChoice(c);
+    const roll = applyChoiceRisk(c, rollChoice(c, ev.timeScale || 1));
     if(c.onSuccess && roll.success) c.onSuccess(state);
     if(c.onFail && !roll.success) c.onFail(state);
     animateResult(roll, bioPharmacyChoiceDrain());   // 生物药学：低学业心态消耗
@@ -4732,45 +5067,55 @@ function chooseOption(ev, i){
   let result = c.result || '';
   const drained = bioPharmacyChoiceDrain();   // 生物药学：低学业心态消耗
   if(c.resolve){ const r = c.resolve(state); eff = r.effect||eff; result = r.result||result; }
-  if(c.risk==='bigInjury' && Math.random() < ((state.injuryShieldYears || 0) > 0 ? 0.02 : 0.08)){ // 带伤硬扛 8% 恶化
-    state.flags.bigInjury=true; state.repeatYear=true;
-    eff = {...eff, ability: (eff.ability||0)-5, mentality: (eff.mentality||0)-2};
-    result += '（伤情突然恶化，你不得不接受手术，休学一年……）';
-  }
-  const actual = applyStats(eff);
+  const roll = applyChoiceRisk(c, {effects:scaledEffects(eff, ev.timeScale || 1), text:result});
+  const actual = applyStats(roll.effects);
   checkAchievements(state);
   if(bioPharmacyBreakdown()) return;
-  showResult(result, actual, c.serviceYears || 0, lowAcademyTipHTML(drained));
+  showResult(roll.text, actual, c.serviceYears || 0, lowAcademyTipHTML(drained));
 }
 
+function statEffectFactor(key, cur, positive){
+  if(positive) return key === 'academy'
+    ? (cur >= 92 ? 0.2 : cur >= 85 ? 0.3 : cur >= 75 ? 0.5 : 0.9)
+    : (cur >= 92 ? 0.15 : cur >= 85 ? 0.25 : cur >= 75 ? 0.4 : cur >= 65 ? 0.55 : 0.65);
+  return cur <= 10 ? 0.35 : cur <= 25 ? 0.6 : 1;
+}
+function statEffectValue(key, value){
+  if(isEasyMode()) return value > 0 ? value * 1.5 : 0;
+  return value * statEffectFactor(key, state.stats[key] ?? 60, value > 0);
+}
 function balanceEffects(eff){
   const out = {};
   for(const k in eff){
-    let v = eff[k];
-    const cur = state.stats[k] ?? 60;
-    if(v > 0){
-      if(cur >= 92) v = Math.round(v * 0.1);
-      else if(cur >= 85) v = Math.round(v * 0.3);
-      else if(cur >= 75) v = Math.round(v * 0.55);
-      else if(cur >= 65) v = Math.round(v * 0.8);
-    } else if(v < 0){
-      if(cur <= 10) v = Math.round(v * 0.35);
-      else if(cur <= 25) v = Math.round(v * 0.6);
-    }
-    out[k] = v;
+    if(!(k in state.stats) || !Number.isFinite(eff[k])) continue;
+    if(!eff[k]){ out[k] = 0; continue; }
+    const value = statEffectValue(k, eff[k]) + (state.statRemainders[k] || 0);
+    out[k] = clamp(state.stats[k] + Math.trunc(value)) - state.stats[k];
   }
   return out;
 }
-
 function applyStats(eff){
   const balanced = balanceEffects(eff);
-  for(const k in balanced){ state.stats[k] = clamp(state.stats[k] + balanced[k]); }
+  for(const k in balanced){
+    if(eff[k]){
+      const value = statEffectValue(k, eff[k]) + (state.statRemainders[k] || 0);
+      state.stats[k] += balanced[k];
+      state.statRemainders[k] = state.stats[k] === 0 || state.stats[k] === 100 ? 0 : value - Math.trunc(value);
+    }
+  }
   return balanced;
 }
 
 /* 结算动画：数值在可能结果间来回跳动，最后落定 */
 function animateResult(roll, drained){
   const box = $('evChoices');
+  if(isFastMode()){
+    const actual = applyStats(roll.effects);
+    $('evStats').innerHTML = statBarHTML();
+    checkAchievements(state);
+    if(!bioPharmacyBreakdown()) showResult(roll.text, actual, 0, lowAcademyTipHTML(drained));
+    return;
+  }
   box.innerHTML = '<div class="result rolling">命运正在决定……</div>';
   const balanced = balanceEffects(roll.effects);
   const after = {};
@@ -4861,7 +5206,7 @@ function yearEnd(){
     state.injury = null;
   }
   state.yearPlanDone = state.yearPlanTotal;
-  const g = applyStats(annualGrowth(state));
+  const {growth:g} = settleYearStats();
   updateSquadRole();
   checkAchievements(state);
   const rows = [
@@ -4874,12 +5219,17 @@ function yearEnd(){
   $('yrTitle').textContent = `${yearName(state.year, state.path)} · 学年结算`;
   let html = rows.map(([l,v])=>{
     const t = v>0?`+${v}`:v; const c = v>0?'var(--good)':(v<0?'var(--bad)':'var(--sub)');
-    return `<tr><td>${l} 自然成长</td><td style="color:${c}">${t}</td></tr>`;
+    let source = '自然成长';
+    if(!isEasyMode() && l === '心态值') source = v < 0 ? '假期状态回落' : '假期休整';
+    if(!isEasyMode() && l === '关系值') source = v < 0 ? '假期联系减少' : '假期交流';
+    return `<tr><td>${l} ${source}</td><td style="color:${c}">${t}</td></tr>`;
   }).join('');
+  if(!isEasyMode()) html += '<tr><td colspan="2" style="font-size:12px;line-height:1.6;color:var(--sub)">学年结束后的假期里，休息、复盘与交流帮助你恢复状态；队友分散离校，训练和联系减少，也可能让竞技状态与默契回落。</td></tr>';
   // 潜能说明
   html += `<tr><td style="font-size:12px;color:var(--sub)">成长来源 · 天赋</td><td style="font-size:12px;color:var(--gold)">${potentialTier(state.potential).label}</td></tr>`;
   $('yrTable').innerHTML = html;
   addLog(`学年结算 · 能力${g.ability>0?'+':''}${g.ability} 心态${g.mentality>0?'+':''}${g.mentality} 关系${g.relation>0?'+':''}${g.relation} 学业${g.academy>0?'+':''}${g.academy}`);
+  if(!isEasyMode() && (g.mentality || g.relation)) addLog(`假期休整与联系变化 · 心态${g.mentality>0?'+':''}${g.mentality} 关系${g.relation>0?'+':''}${g.relation}`, '假期');
   const note = $('yrNote'); note.style.display='none';
   if(state.flags.referee){
     note.style.display='block';
@@ -4925,7 +5275,7 @@ function setupAchievementClaim(){
     state.achievementClaimed = true;
     $('achClaimOverlay').classList.remove('show');
     const title = encodeURIComponent(`全成就玩家登记：${id}`);
-    const body = encodeURIComponent(`游戏 ID / 名字：${id}\n版本：v2.0\n达成时间：${new Date().toLocaleString('zh-CN')}`);
+    const body = encodeURIComponent(`游戏 ID / 名字：${id}\n版本：V3.0\n达成时间：${new Date().toLocaleString('zh-CN')}`);
     window.open(`https://github.com/Fantasicrap/HUSTCup-campus-football-simulator/issues/new?title=${title}&body=${body}&labels=full-achievement`, '_blank');
   };
   $('achClaimCancel').onclick = ()=>{
@@ -4939,8 +5289,8 @@ function setupRevealToggle(){
   toggle.checked = !!state.showChoiceDetails;
   toggle.onchange = ()=>{
     state.showChoiceDetails = toggle.checked;
-    if(current && document.querySelector('#evChoices .choice')){
-      renderEvent(current);
+    if(rerenderEvent && document.querySelector('#evChoices .choice')){
+      rerenderEvent();
     }
   };
 }

@@ -51,6 +51,11 @@ function run() {
   }
 
   const rawName = extractName();
+  if (!rawName) {
+    setOutput("status", "invalid");
+    console.log("Registration requires a colon followed by a player name.");
+    return;
+  }
   const name = sanitizeName(rawName);
   const current = fs.existsSync(LIST_FILE)
     ? fs.readFileSync(LIST_FILE, "utf8").replace(/\r\n/g, "\n")

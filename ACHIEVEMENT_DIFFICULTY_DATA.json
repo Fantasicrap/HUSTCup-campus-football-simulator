@@ -1,0 +1,2142 @@
+{
+  "samplesPerConfig": 100,
+  "scenarios": [
+    {
+      "version": "baseline",
+      "id": "full-study",
+      "mode": "full",
+      "policy": "study",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 48.01,
+      "averageStats": {
+        "ability": 90.8,
+        "mentality": 84.7,
+        "relation": 91.9,
+        "academy": 72.7
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 61,
+          "p10": 79,
+          "median": 85,
+          "p90": 90,
+          "max": 92
+        },
+        "relation": {
+          "min": 83,
+          "p10": 89,
+          "median": 93,
+          "p90": 94,
+          "max": 96
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 60,
+        "varsity_star": 40,
+        "champion_glory": 98,
+        "yi_champion_glory": 3,
+        "medical_ball_king": 0,
+        "all_rounder": 16,
+        "academic_elite": 0,
+        "iron_comeback": 15,
+        "ignore_doctor": 0,
+        "outrun_you": 66,
+        "pro_chance": 13,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 94,
+        "fruit_basket_killer": 25,
+        "best_wishes": 18,
+        "world_cup_promise": 41,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "full-study",
+      "mode": "full",
+      "policy": "study",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 40.67,
+      "averageStats": {
+        "ability": 75.3,
+        "mentality": 82.1,
+        "relation": 77,
+        "academy": 89.8
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 78,
+          "p10": 80,
+          "median": 83,
+          "p90": 83,
+          "max": 84
+        },
+        "relation": {
+          "min": 73,
+          "p10": 75,
+          "median": 77,
+          "p90": 79,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 97,
+        "golden_glove": 0,
+        "captain_band": 63,
+        "varsity_star": 21,
+        "champion_glory": 93,
+        "yi_champion_glory": 5,
+        "medical_ball_king": 0,
+        "all_rounder": 17,
+        "academic_elite": 60,
+        "iron_comeback": 9,
+        "ignore_doctor": 0,
+        "outrun_you": 63,
+        "pro_chance": 13,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 1,
+        "dual_college_legend": 0,
+        "highest_honor": 89,
+        "fruit_basket_killer": 14,
+        "best_wishes": 21,
+        "world_cup_promise": 32,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "baseline",
+      "id": "full-football",
+      "mode": "full",
+      "policy": "football",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 50.56,
+      "averageStats": {
+        "ability": 92.7,
+        "mentality": 86.5,
+        "relation": 93.2,
+        "academy": 54.1
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 71,
+          "p10": 82,
+          "median": 87,
+          "p90": 91,
+          "max": 92
+        },
+        "relation": {
+          "min": 85,
+          "p10": 91,
+          "median": 93,
+          "p90": 95,
+          "max": 96
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 63,
+        "varsity_star": 38,
+        "champion_glory": 99,
+        "yi_champion_glory": 4,
+        "medical_ball_king": 0,
+        "all_rounder": 0,
+        "academic_elite": 0,
+        "iron_comeback": 10,
+        "ignore_doctor": 0,
+        "outrun_you": 66,
+        "pro_chance": 15,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 98,
+        "fruit_basket_killer": 27,
+        "best_wishes": 16,
+        "world_cup_promise": 42,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "full-football",
+      "mode": "full",
+      "policy": "football",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 42.38,
+      "averageStats": {
+        "ability": 79.8,
+        "mentality": 81.8,
+        "relation": 77.4,
+        "academy": 79.9
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 78,
+          "p10": 80,
+          "median": 82,
+          "p90": 83,
+          "max": 84
+        },
+        "relation": {
+          "min": 75,
+          "p10": 76,
+          "median": 77,
+          "p90": 79,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 58,
+        "varsity_star": 15,
+        "champion_glory": 97,
+        "yi_champion_glory": 4,
+        "medical_ball_king": 0,
+        "all_rounder": 27,
+        "academic_elite": 0,
+        "iron_comeback": 13,
+        "ignore_doctor": 0,
+        "outrun_you": 64,
+        "pro_chance": 13,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 88,
+        "fruit_basket_killer": 16,
+        "best_wishes": 26,
+        "world_cup_promise": 39,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "baseline",
+      "id": "full-balanced",
+      "mode": "full",
+      "policy": "balanced",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 48.41,
+      "averageStats": {
+        "ability": 91.4,
+        "mentality": 86.7,
+        "relation": 92.2,
+        "academy": 67.2
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 78,
+          "p10": 84,
+          "median": 87,
+          "p90": 90,
+          "max": 92
+        },
+        "relation": {
+          "min": 85,
+          "p10": 90,
+          "median": 93,
+          "p90": 94,
+          "max": 96
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 63,
+        "varsity_star": 40,
+        "champion_glory": 98,
+        "yi_champion_glory": 3,
+        "medical_ball_king": 0,
+        "all_rounder": 3,
+        "academic_elite": 0,
+        "iron_comeback": 11,
+        "ignore_doctor": 0,
+        "outrun_you": 66,
+        "pro_chance": 14,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 96,
+        "fruit_basket_killer": 26,
+        "best_wishes": 18,
+        "world_cup_promise": 43,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "full-balanced",
+      "mode": "full",
+      "policy": "balanced",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 42.51,
+      "averageStats": {
+        "ability": 77.7,
+        "mentality": 82.2,
+        "relation": 77.6,
+        "academy": 85.8
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 79,
+          "p10": 81,
+          "median": 82,
+          "p90": 83,
+          "max": 84
+        },
+        "relation": {
+          "min": 74,
+          "p10": 77,
+          "median": 78,
+          "p90": 79,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 99,
+        "golden_glove": 0,
+        "captain_band": 56,
+        "varsity_star": 17,
+        "champion_glory": 93,
+        "yi_champion_glory": 6,
+        "medical_ball_king": 0,
+        "all_rounder": 33,
+        "academic_elite": 4,
+        "iron_comeback": 14,
+        "ignore_doctor": 0,
+        "outrun_you": 62,
+        "pro_chance": 14,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 91,
+        "fruit_basket_killer": 20,
+        "best_wishes": 21,
+        "world_cup_promise": 40,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-study",
+      "mode": "fast",
+      "policy": "study",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 42.54,
+      "averageStats": {
+        "ability": 74.1,
+        "mentality": 81.8,
+        "relation": 76.9,
+        "academy": 90.7
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 78,
+          "p10": 80,
+          "median": 82,
+          "p90": 83,
+          "max": 85
+        },
+        "relation": {
+          "min": 71,
+          "p10": 75,
+          "median": 77,
+          "p90": 78,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 59,
+        "varsity_star": 7,
+        "champion_glory": 93,
+        "yi_champion_glory": 7,
+        "medical_ball_king": 0,
+        "all_rounder": 16,
+        "academic_elite": 73,
+        "iron_comeback": 2,
+        "ignore_doctor": 0,
+        "outrun_you": 56,
+        "pro_chance": 8,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 1,
+        "dual_college_legend": 0,
+        "highest_honor": 85,
+        "fruit_basket_killer": 19,
+        "best_wishes": 21,
+        "world_cup_promise": 36,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-football",
+      "mode": "fast",
+      "policy": "football",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 44.43,
+      "averageStats": {
+        "ability": 81.7,
+        "mentality": 81.4,
+        "relation": 77.7,
+        "academy": 78.5
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 77,
+          "p10": 80,
+          "median": 82,
+          "p90": 83,
+          "max": 84
+        },
+        "relation": {
+          "min": 75,
+          "p10": 76,
+          "median": 78,
+          "p90": 79,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 59,
+        "varsity_star": 7,
+        "champion_glory": 97,
+        "yi_champion_glory": 7,
+        "medical_ball_king": 0,
+        "all_rounder": 27,
+        "academic_elite": 1,
+        "iron_comeback": 12,
+        "ignore_doctor": 0,
+        "outrun_you": 52,
+        "pro_chance": 9,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 92,
+        "fruit_basket_killer": 14,
+        "best_wishes": 27,
+        "world_cup_promise": 39,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-balanced",
+      "mode": "fast",
+      "policy": "balanced",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 42.82,
+      "averageStats": {
+        "ability": 77.1,
+        "mentality": 81.4,
+        "relation": 77.6,
+        "academy": 85.7
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 78,
+          "p10": 80,
+          "median": 81,
+          "p90": 83,
+          "max": 85
+        },
+        "relation": {
+          "min": 75,
+          "p10": 77,
+          "median": 77,
+          "p90": 79,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 60,
+        "varsity_star": 4,
+        "champion_glory": 95,
+        "yi_champion_glory": 11,
+        "medical_ball_king": 0,
+        "all_rounder": 32,
+        "academic_elite": 13,
+        "iron_comeback": 6,
+        "ignore_doctor": 0,
+        "outrun_you": 59,
+        "pro_chance": 12,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 91,
+        "fruit_basket_killer": 19,
+        "best_wishes": 24,
+        "world_cup_promise": 38,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-yi",
+      "mode": "fast",
+      "policy": "football",
+      "league": "乙组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 34.56,
+      "averageStats": {
+        "ability": 79.7,
+        "mentality": 80.2,
+        "relation": 76.7,
+        "academy": 78.1
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 73,
+          "p10": 78,
+          "median": 80,
+          "p90": 82,
+          "max": 83
+        },
+        "relation": {
+          "min": 73,
+          "p10": 75,
+          "median": 77,
+          "p90": 78,
+          "max": 79
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 90,
+        "golden_glove": 0,
+        "captain_band": 57,
+        "varsity_star": 8,
+        "champion_glory": 47,
+        "yi_champion_glory": 86,
+        "medical_ball_king": 0,
+        "all_rounder": 15,
+        "academic_elite": 1,
+        "iron_comeback": 14,
+        "ignore_doctor": 0,
+        "outrun_you": 59,
+        "pro_chance": 13,
+        "military_service": 0,
+        "fan_favorite": 96,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 69,
+        "fruit_basket_killer": 22,
+        "best_wishes": 23,
+        "world_cup_promise": 40,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-medical",
+      "mode": "fast",
+      "policy": "study",
+      "league": "同济组",
+      "college": "基础医学院",
+      "completed": 100,
+      "longest": 5,
+      "averageGoals": 33.08,
+      "averageStats": {
+        "ability": 73.2,
+        "mentality": 82.4,
+        "relation": 76.8,
+        "academy": 94
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 78,
+          "p10": 80,
+          "median": 83,
+          "p90": 84,
+          "max": 85
+        },
+        "relation": {
+          "min": 72,
+          "p10": 75,
+          "median": 77,
+          "p90": 78,
+          "max": 79
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 94,
+        "golden_glove": 0,
+        "captain_band": 65,
+        "varsity_star": 7,
+        "champion_glory": 0,
+        "yi_champion_glory": 0,
+        "medical_ball_king": 100,
+        "all_rounder": 14,
+        "academic_elite": 98,
+        "iron_comeback": 7,
+        "ignore_doctor": 0,
+        "outrun_you": 93,
+        "pro_chance": 20,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 64,
+        "highest_honor": 91,
+        "fruit_basket_killer": 17,
+        "best_wishes": 18,
+        "world_cup_promise": 31,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-gk",
+      "mode": "fast",
+      "policy": "football",
+      "league": "甲组",
+      "position": "门将",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 0.12,
+      "averageStats": {
+        "ability": 80.2,
+        "mentality": 80.4,
+        "relation": 76.5,
+        "academy": 77.6
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 77,
+          "p10": 79,
+          "median": 80,
+          "p90": 82,
+          "max": 83
+        },
+        "relation": {
+          "min": 73,
+          "p10": 75,
+          "median": 77,
+          "p90": 78,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 12,
+        "goal_hunter": 0,
+        "golden_glove": 27,
+        "captain_band": 62,
+        "varsity_star": 9,
+        "champion_glory": 31,
+        "yi_champion_glory": 15,
+        "medical_ball_king": 0,
+        "all_rounder": 15,
+        "academic_elite": 1,
+        "iron_comeback": 10,
+        "ignore_doctor": 0,
+        "outrun_you": 60,
+        "pro_chance": 12,
+        "military_service": 0,
+        "fan_favorite": 85,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 25,
+        "fruit_basket_killer": 16,
+        "best_wishes": 25,
+        "world_cup_promise": 36,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "baseline",
+      "id": "full-gk",
+      "mode": "full",
+      "policy": "football",
+      "league": "甲组",
+      "position": "门将",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 7.09,
+      "averageStats": {
+        "ability": 92.6,
+        "mentality": 79,
+        "relation": 89.9,
+        "academy": 52.4
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 63,
+          "p10": 68,
+          "median": 82,
+          "p90": 87,
+          "max": 90
+        },
+        "relation": {
+          "min": 76,
+          "p10": 86,
+          "median": 91,
+          "p90": 93,
+          "max": 94
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 0,
+        "golden_glove": 0,
+        "captain_band": 59,
+        "varsity_star": 39,
+        "champion_glory": 46,
+        "yi_champion_glory": 19,
+        "medical_ball_king": 0,
+        "all_rounder": 0,
+        "academic_elite": 0,
+        "iron_comeback": 10,
+        "ignore_doctor": 0,
+        "outrun_you": 61,
+        "pro_chance": 15,
+        "military_service": 0,
+        "fan_favorite": 91,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 1,
+        "dual_college_legend": 0,
+        "highest_honor": 40,
+        "fruit_basket_killer": 17,
+        "best_wishes": 16,
+        "world_cup_promise": 30,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "full-gk",
+      "mode": "full",
+      "policy": "football",
+      "league": "甲组",
+      "position": "门将",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 0.11,
+      "averageStats": {
+        "ability": 78.5,
+        "mentality": 80.7,
+        "relation": 76.2,
+        "academy": 79.8
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 76,
+          "p10": 79,
+          "median": 81,
+          "p90": 82,
+          "max": 83
+        },
+        "relation": {
+          "min": 72,
+          "p10": 75,
+          "median": 76,
+          "p90": 78,
+          "max": 79
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 9,
+        "goal_hunter": 0,
+        "golden_glove": 27,
+        "captain_band": 58,
+        "varsity_star": 26,
+        "champion_glory": 38,
+        "yi_champion_glory": 16,
+        "medical_ball_king": 0,
+        "all_rounder": 12,
+        "academic_elite": 0,
+        "iron_comeback": 7,
+        "ignore_doctor": 0,
+        "outrun_you": 66,
+        "pro_chance": 10,
+        "military_service": 0,
+        "fan_favorite": 85,
+        "official_recognition": 97,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 24,
+        "fruit_basket_killer": 22,
+        "best_wishes": 26,
+        "world_cup_promise": 44,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "baseline",
+      "id": "full-defender",
+      "mode": "full",
+      "policy": "football",
+      "league": "甲组",
+      "position": "后卫",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 14.53,
+      "averageStats": {
+        "ability": 92.1,
+        "mentality": 80,
+        "relation": 90.8,
+        "academy": 52.4
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 53,
+          "p10": 67,
+          "median": 84,
+          "p90": 86,
+          "max": 89
+        },
+        "relation": {
+          "min": 83,
+          "p10": 86,
+          "median": 92,
+          "p90": 93,
+          "max": 97
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 18,
+        "golden_glove": 0,
+        "captain_band": 61,
+        "varsity_star": 39,
+        "champion_glory": 66,
+        "yi_champion_glory": 9,
+        "medical_ball_king": 0,
+        "all_rounder": 0,
+        "academic_elite": 0,
+        "iron_comeback": 17,
+        "ignore_doctor": 0,
+        "outrun_you": 60,
+        "pro_chance": 16,
+        "military_service": 0,
+        "fan_favorite": 96,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 51,
+        "fruit_basket_killer": 24,
+        "best_wishes": 20,
+        "world_cup_promise": 40,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "full-defender",
+      "mode": "full",
+      "policy": "football",
+      "league": "甲组",
+      "position": "后卫",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 5.72,
+      "averageStats": {
+        "ability": 77.7,
+        "mentality": 80.8,
+        "relation": 76.4,
+        "academy": 80.8
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 77,
+          "p10": 79,
+          "median": 81,
+          "p90": 82,
+          "max": 83
+        },
+        "relation": {
+          "min": 73,
+          "p10": 75,
+          "median": 76,
+          "p90": 78,
+          "max": 79
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 99,
+        "goal_hunter": 0,
+        "golden_glove": 0,
+        "captain_band": 61,
+        "varsity_star": 16,
+        "champion_glory": 50,
+        "yi_champion_glory": 19,
+        "medical_ball_king": 0,
+        "all_rounder": 15,
+        "academic_elite": 0,
+        "iron_comeback": 15,
+        "ignore_doctor": 0,
+        "outrun_you": 68,
+        "pro_chance": 10,
+        "military_service": 0,
+        "fan_favorite": 94,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 35,
+        "fruit_basket_killer": 27,
+        "best_wishes": 24,
+        "world_cup_promise": 45,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-defender",
+      "mode": "fast",
+      "policy": "football",
+      "league": "甲组",
+      "position": "后卫",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 5.92,
+      "averageStats": {
+        "ability": 79.3,
+        "mentality": 80,
+        "relation": 76.5,
+        "academy": 78.8
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 75,
+          "p10": 78,
+          "median": 80,
+          "p90": 82,
+          "max": 83
+        },
+        "relation": {
+          "min": 72,
+          "p10": 75,
+          "median": 77,
+          "p90": 78,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 0,
+        "golden_glove": 0,
+        "captain_band": 64,
+        "varsity_star": 6,
+        "champion_glory": 50,
+        "yi_champion_glory": 14,
+        "medical_ball_king": 0,
+        "all_rounder": 11,
+        "academic_elite": 0,
+        "iron_comeback": 20,
+        "ignore_doctor": 0,
+        "outrun_you": 61,
+        "pro_chance": 11,
+        "military_service": 0,
+        "fan_favorite": 92,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 37,
+        "fruit_basket_killer": 22,
+        "best_wishes": 16,
+        "world_cup_promise": 36,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-referee",
+      "mode": "fast",
+      "policy": "football",
+      "league": "甲组",
+      "referee": true,
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 42.58,
+      "averageStats": {
+        "ability": 76.4,
+        "mentality": 81.6,
+        "relation": 79.4,
+        "academy": 77.3
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 77,
+          "p10": 80,
+          "median": 82,
+          "p90": 83,
+          "max": 84
+        },
+        "relation": {
+          "min": 76,
+          "p10": 78,
+          "median": 80,
+          "p90": 81,
+          "max": 82
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 63,
+        "varsity_star": 8,
+        "champion_glory": 97,
+        "yi_champion_glory": 6,
+        "medical_ball_king": 0,
+        "all_rounder": 15,
+        "academic_elite": 0,
+        "iron_comeback": 12,
+        "ignore_doctor": 0,
+        "outrun_you": 63,
+        "pro_chance": 14,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 1,
+        "dual_college_legend": 0,
+        "highest_honor": 93,
+        "fruit_basket_killer": 17,
+        "best_wishes": 26,
+        "world_cup_promise": 43,
+        "referee_path": 100,
+        "referee_level2": 65,
+        "referee_level1": 0,
+        "referee_league": 65,
+        "referee_final": 30,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-long",
+      "mode": "fast",
+      "policy": "balanced",
+      "league": "乙组",
+      "long": true,
+      "risky": true,
+      "completed": 100,
+      "longest": 14,
+      "averageGoals": 66.53,
+      "averageStats": {
+        "ability": 80.5,
+        "mentality": 81,
+        "relation": 77.1,
+        "academy": 89.2
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 77,
+          "p10": 78,
+          "median": 81,
+          "p90": 84,
+          "max": 85
+        },
+        "relation": {
+          "min": 74,
+          "p10": 76,
+          "median": 77,
+          "p90": 78,
+          "max": 80
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 93,
+        "golden_glove": 0,
+        "captain_band": 72,
+        "varsity_star": 18,
+        "champion_glory": 69,
+        "yi_champion_glory": 81,
+        "medical_ball_king": 0,
+        "all_rounder": 58,
+        "academic_elite": 53,
+        "iron_comeback": 20,
+        "ignore_doctor": 5,
+        "outrun_you": 93,
+        "pro_chance": 46,
+        "military_service": 100,
+        "fan_favorite": 97,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 16,
+        "grand_slam": 5,
+        "dual_college_legend": 23,
+        "highest_honor": 82,
+        "fruit_basket_killer": 20,
+        "best_wishes": 26,
+        "world_cup_promise": 39,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "fast-long-referee",
+      "mode": "fast",
+      "policy": "balanced",
+      "league": "乙组",
+      "long": true,
+      "referee": true,
+      "risky": true,
+      "completed": 100,
+      "longest": 14,
+      "averageGoals": 66,
+      "averageStats": {
+        "ability": 75.3,
+        "mentality": 81.2,
+        "relation": 78.6,
+        "academy": 88.5
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 77,
+          "p10": 79,
+          "median": 81,
+          "p90": 84,
+          "max": 86
+        },
+        "relation": {
+          "min": 75,
+          "p10": 77,
+          "median": 79,
+          "p90": 80,
+          "max": 81
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 97,
+        "golden_glove": 0,
+        "captain_band": 74,
+        "varsity_star": 10,
+        "champion_glory": 72,
+        "yi_champion_glory": 78,
+        "medical_ball_king": 0,
+        "all_rounder": 37,
+        "academic_elite": 49,
+        "iron_comeback": 11,
+        "ignore_doctor": 4,
+        "outrun_you": 93,
+        "pro_chance": 39,
+        "military_service": 100,
+        "fan_favorite": 97,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 11,
+        "grand_slam": 10,
+        "dual_college_legend": 27,
+        "highest_honor": 83,
+        "fruit_basket_killer": 27,
+        "best_wishes": 27,
+        "world_cup_promise": 45,
+        "referee_path": 100,
+        "referee_level2": 75,
+        "referee_level1": 31,
+        "referee_league": 75,
+        "referee_final": 57,
+        "referee_veteran": 18
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-study",
+      "mode": "easy",
+      "policy": "study",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 54.31,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 100,
+        "relation": 100,
+        "academy": 100
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 74,
+        "varsity_star": 9,
+        "champion_glory": 99,
+        "yi_champion_glory": 2,
+        "medical_ball_king": 0,
+        "all_rounder": 100,
+        "academic_elite": 100,
+        "iron_comeback": 13,
+        "ignore_doctor": 0,
+        "outrun_you": 53,
+        "pro_chance": 26,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 96,
+        "fruit_basket_killer": 21,
+        "best_wishes": 22,
+        "world_cup_promise": 42,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-football",
+      "mode": "easy",
+      "policy": "football",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 56.02,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 99.9,
+        "relation": 99.9,
+        "academy": 99.7
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 90,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 87,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 76,
+        "varsity_star": 9,
+        "champion_glory": 99,
+        "yi_champion_glory": 1,
+        "medical_ball_king": 0,
+        "all_rounder": 100,
+        "academic_elite": 100,
+        "iron_comeback": 11,
+        "ignore_doctor": 0,
+        "outrun_you": 51,
+        "pro_chance": 31,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 98,
+        "fruit_basket_killer": 15,
+        "best_wishes": 22,
+        "world_cup_promise": 36,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-balanced",
+      "mode": "easy",
+      "policy": "balanced",
+      "league": "甲组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 55.66,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 99.9,
+        "relation": 100,
+        "academy": 99.9
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 94,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 99,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 75,
+        "varsity_star": 8,
+        "champion_glory": 100,
+        "yi_champion_glory": 0,
+        "medical_ball_king": 0,
+        "all_rounder": 100,
+        "academic_elite": 100,
+        "iron_comeback": 13,
+        "ignore_doctor": 0,
+        "outrun_you": 54,
+        "pro_chance": 26,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 0,
+        "highest_honor": 98,
+        "fruit_basket_killer": 19,
+        "best_wishes": 22,
+        "world_cup_promise": 38,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-yi",
+      "mode": "easy",
+      "policy": "football",
+      "league": "乙组",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 46.05,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 99.4,
+        "relation": 100,
+        "academy": 99.7
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 79,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 98,
+        "golden_glove": 0,
+        "captain_band": 69,
+        "varsity_star": 12,
+        "champion_glory": 78,
+        "yi_champion_glory": 90,
+        "medical_ball_king": 0,
+        "all_rounder": 99,
+        "academic_elite": 100,
+        "iron_comeback": 11,
+        "ignore_doctor": 0,
+        "outrun_you": 63,
+        "pro_chance": 24,
+        "military_service": 0,
+        "fan_favorite": 99,
+        "official_recognition": 99,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 14,
+        "dual_college_legend": 0,
+        "highest_honor": 86,
+        "fruit_basket_killer": 21,
+        "best_wishes": 22,
+        "world_cup_promise": 38,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-medical",
+      "mode": "easy",
+      "policy": "study",
+      "league": "同济组",
+      "college": "基础医学院",
+      "completed": 100,
+      "longest": 5,
+      "averageGoals": 44.19,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 100,
+        "relation": 100,
+        "academy": 100
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 58,
+        "varsity_star": 9,
+        "champion_glory": 0,
+        "yi_champion_glory": 0,
+        "medical_ball_king": 100,
+        "all_rounder": 100,
+        "academic_elite": 100,
+        "iron_comeback": 15,
+        "ignore_doctor": 0,
+        "outrun_you": 92,
+        "pro_chance": 43,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 0,
+        "dual_college_legend": 81,
+        "highest_honor": 97,
+        "fruit_basket_killer": 22,
+        "best_wishes": 18,
+        "world_cup_promise": 37,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-gk",
+      "mode": "easy",
+      "policy": "football",
+      "league": "甲组",
+      "position": "门将",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 0.18,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 99.4,
+        "relation": 99.9,
+        "academy": 99.3
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 88,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 93,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 17,
+        "goal_hunter": 0,
+        "golden_glove": 69,
+        "captain_band": 69,
+        "varsity_star": 9,
+        "champion_glory": 81,
+        "yi_champion_glory": 11,
+        "medical_ball_king": 0,
+        "all_rounder": 100,
+        "academic_elite": 99,
+        "iron_comeback": 16,
+        "ignore_doctor": 0,
+        "outrun_you": 62,
+        "pro_chance": 20,
+        "military_service": 0,
+        "fan_favorite": 99,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 3,
+        "dual_college_legend": 0,
+        "highest_honor": 58,
+        "fruit_basket_killer": 24,
+        "best_wishes": 22,
+        "world_cup_promise": 43,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-defender",
+      "mode": "easy",
+      "policy": "football",
+      "league": "甲组",
+      "position": "后卫",
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 7.81,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 98.7,
+        "relation": 99.8,
+        "academy": 99.3
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 73,
+          "p10": 96,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 87,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 99,
+        "goal_hunter": 0,
+        "golden_glove": 0,
+        "captain_band": 65,
+        "varsity_star": 8,
+        "champion_glory": 75,
+        "yi_champion_glory": 14,
+        "medical_ball_king": 0,
+        "all_rounder": 99,
+        "academic_elite": 99,
+        "iron_comeback": 22,
+        "ignore_doctor": 0,
+        "outrun_you": 68,
+        "pro_chance": 24,
+        "military_service": 0,
+        "fan_favorite": 98,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 2,
+        "dual_college_legend": 0,
+        "highest_honor": 57,
+        "fruit_basket_killer": 20,
+        "best_wishes": 17,
+        "world_cup_promise": 36,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-referee",
+      "mode": "easy",
+      "policy": "football",
+      "league": "甲组",
+      "referee": true,
+      "completed": 100,
+      "longest": 4,
+      "averageGoals": 55.3,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 100,
+        "relation": 100,
+        "academy": 99.9
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 82,
+        "varsity_star": 5,
+        "champion_glory": 100,
+        "yi_champion_glory": 3,
+        "medical_ball_king": 0,
+        "all_rounder": 100,
+        "academic_elite": 100,
+        "iron_comeback": 16,
+        "ignore_doctor": 0,
+        "outrun_you": 64,
+        "pro_chance": 18,
+        "military_service": 0,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 0,
+        "grand_slam": 1,
+        "dual_college_legend": 0,
+        "highest_honor": 97,
+        "fruit_basket_killer": 17,
+        "best_wishes": 17,
+        "world_cup_promise": 32,
+        "referee_path": 100,
+        "referee_level2": 66,
+        "referee_level1": 0,
+        "referee_league": 66,
+        "referee_final": 35,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-long",
+      "mode": "easy",
+      "policy": "balanced",
+      "league": "乙组",
+      "long": true,
+      "risky": true,
+      "completed": 100,
+      "longest": 15,
+      "averageGoals": 122.67,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 100,
+        "relation": 100,
+        "academy": 100
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 83,
+        "varsity_star": 18,
+        "champion_glory": 100,
+        "yi_champion_glory": 80,
+        "medical_ball_king": 0,
+        "all_rounder": 100,
+        "academic_elite": 100,
+        "iron_comeback": 23,
+        "ignore_doctor": 3,
+        "outrun_you": 98,
+        "pro_chance": 81,
+        "military_service": 100,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 25,
+        "grand_slam": 34,
+        "dual_college_legend": 36,
+        "highest_honor": 100,
+        "fruit_basket_killer": 42,
+        "best_wishes": 46,
+        "world_cup_promise": 72,
+        "referee_path": 0,
+        "referee_level2": 0,
+        "referee_level1": 0,
+        "referee_league": 0,
+        "referee_final": 0,
+        "referee_veteran": 0
+      }
+    },
+    {
+      "version": "current",
+      "id": "easy-long-referee",
+      "mode": "easy",
+      "policy": "balanced",
+      "league": "乙组",
+      "long": true,
+      "referee": true,
+      "risky": true,
+      "completed": 100,
+      "longest": 15,
+      "averageGoals": 127.07,
+      "averageStats": {
+        "ability": 100,
+        "mentality": 100,
+        "relation": 100,
+        "academy": 100
+      },
+      "socialDistribution": {
+        "mentality": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        },
+        "relation": {
+          "min": 100,
+          "p10": 100,
+          "median": 100,
+          "p90": 100,
+          "max": 100
+        }
+      },
+      "rates": {
+        "green_start": 100,
+        "first_goal": 100,
+        "goal_hunter": 100,
+        "golden_glove": 0,
+        "captain_band": 95,
+        "varsity_star": 18,
+        "champion_glory": 100,
+        "yi_champion_glory": 80,
+        "medical_ball_king": 0,
+        "all_rounder": 100,
+        "academic_elite": 100,
+        "iron_comeback": 36,
+        "ignore_doctor": 4,
+        "outrun_you": 100,
+        "pro_chance": 79,
+        "military_service": 100,
+        "fan_favorite": 100,
+        "official_recognition": 100,
+        "highest_mountain_longest_river": 29,
+        "grand_slam": 44,
+        "dual_college_legend": 47,
+        "highest_honor": 100,
+        "fruit_basket_killer": 42,
+        "best_wishes": 43,
+        "world_cup_promise": 69,
+        "referee_path": 100,
+        "referee_level2": 99,
+        "referee_level1": 77,
+        "referee_league": 99,
+        "referee_final": 97,
+        "referee_veteran": 53
+      }
+    }
+  ],
+  "failures": [],
+  "achievements": [
+    {
+      "id": "green_start",
+      "name": "绿茵起航",
+      "desc": "完成大一学年"
+    },
+    {
+      "id": "first_goal",
+      "name": "处子进球",
+      "desc": "生涯累计打入 1 球"
+    },
+    {
+      "id": "goal_hunter",
+      "name": "进球机器",
+      "desc": "生涯累计打入 20 球"
+    },
+    {
+      "id": "golden_glove",
+      "name": "金手套",
+      "desc": "以门将身份出战，球队在单届赛事打入决赛，且含决赛累计丢球不超过 2 球（不含点球大战）"
+    },
+    {
+      "id": "captain_band",
+      "name": "戴上袖标",
+      "desc": "当选院队队长"
+    },
+    {
+      "id": "varsity_star",
+      "name": "校队之星",
+      "desc": "入选学校足球队"
+    },
+    {
+      "id": "champion_glory",
+      "name": "甲组之巅",
+      "desc": "夺得华工杯甲组冠军"
+    },
+    {
+      "id": "yi_champion_glory",
+      "name": "乙组之王",
+      "desc": "夺得华工杯乙组冠军"
+    },
+    {
+      "id": "medical_ball_king",
+      "name": "医学球王",
+      "desc": "夺得华工杯同济医学院组冠军"
+    },
+    {
+      "id": "all_rounder",
+      "name": "全能战士",
+      "desc": "四维数值全部达到 80"
+    },
+    {
+      "id": "academic_elite",
+      "name": "学业巅峰",
+      "desc": "学业值达到 90"
+    },
+    {
+      "id": "iron_comeback",
+      "name": "重伤归来",
+      "desc": "遭遇重伤后能力仍达到 75"
+    },
+    {
+      "id": "ignore_doctor",
+      "name": "别把医生的话当耳边风",
+      "desc": "生涯中累计两次无视队医建议、带伤硬撑"
+    },
+    {
+      "id": "outrun_you",
+      "name": "你跑不过我你信不信（记得爱惜自己）",
+      "desc": "熬夜看完球后，紧接着在体测或晨训加练里拼尽全力"
+    },
+    {
+      "id": "pro_chance",
+      "name": "职业试训",
+      "desc": "获得职业队试训机会"
+    },
+    {
+      "id": "military_service",
+      "name": "军旅归来",
+      "desc": "完成两年服役并保留学籍"
+    },
+    {
+      "id": "fan_favorite",
+      "name": "校园顶流",
+      "desc": "校内球迷关注度达到 80"
+    },
+    {
+      "id": "official_recognition",
+      "name": "官方认可",
+      "desc": "HUSTFootball 关注度达到 80"
+    },
+    {
+      "id": "highest_mountain_longest_river",
+      "name": "最高的山、最长的河",
+      "desc": "完成13年最长生涯，且每个学年都有华工杯出战纪录"
+    },
+    {
+      "id": "grand_slam",
+      "name": "全满贯",
+      "desc": "夺得新生杯、华工杯乙组、华工杯甲组、毕业杯和超级杯冠军"
+    },
+    {
+      "id": "dual_college_legend",
+      "name": "双院名宿",
+      "desc": "代表至少两个不同学院分别夺得杯赛冠军"
+    },
+    {
+      "id": "highest_honor",
+      "name": "最高荣誉",
+      "desc": "夺得超级杯冠军"
+    },
+    {
+      "id": "fruit_basket_killer",
+      "name": "果篮杀手",
+      "desc": "给韦世豪学长送出一个果篮"
+    },
+    {
+      "id": "best_wishes",
+      "name": "美好的祝愿",
+      "desc": "给徐彬学长送出一个冠军奖杯"
+    },
+    {
+      "id": "world_cup_promise",
+      "name": "世界杯？世界杯！",
+      "desc": "在学长彩蛋离别时获得世界杯承诺"
+    },
+    {
+      "id": "referee_path",
+      "name": "黑衣初亮相",
+      "desc": "加入足球协会成为裁判员"
+    },
+    {
+      "id": "referee_level2",
+      "name": "二级裁判",
+      "desc": "通过二级裁判员培训"
+    },
+    {
+      "id": "referee_level1",
+      "name": "一级裁判",
+      "desc": "通过一级裁判员培训"
+    },
+    {
+      "id": "referee_league",
+      "name": "联赛执法资格",
+      "desc": "获得校外联赛执法资格"
+    },
+    {
+      "id": "referee_final",
+      "name": "决赛哨声",
+      "desc": "担任决赛主裁判"
+    },
+    {
+      "id": "referee_veteran",
+      "name": "执法常客",
+      "desc": "完成 15 场裁判执法"
+    }
+  ],
+  "rules": {
+    "full": "gradual holiday adaptation, no fixed ranges",
+    "fast": "gradual holiday adaptation, no fixed ranges",
+    "easy": "no social adaptation; positive gains x1.5; negative effects zero",
+    "goalkeeper": "ability above 70 gradually reduces concede lambda and event goal probability up to 50%; substitutes scale 65%; absence and coach excluded",
+    "goldenGlove": "goalkeeper appearance; completed final; total regular-time cup goals conceded <=2 including absences; shootout excluded"
+  }
+}

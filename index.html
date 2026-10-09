@@ -110,6 +110,8 @@
   .college-item .college-name{font-size:13px; font-weight:700; line-height:1.4; overflow-wrap:anywhere;}
   .college-item .college-group{display:inline-block; margin-top:4px; padding:2px 6px; border-radius:10px;
     font-size:10px; color:var(--sub); background:var(--card2); border:1px solid var(--line);}
+  .collegegrid .choice.college-item{display:flex; margin-bottom:0; padding:10px;}
+  .collegegrid .choice .college-name{display:block;}
 
   .btn{display:block; width:100%; padding:15px; border:none; border-radius:14px; font-size:16px;
     font-weight:700; cursor:pointer; background:var(--accent); color:#fff; transition:.15s; text-align:center;}
@@ -1833,14 +1835,20 @@ function refereeJoinEvent(s){
 }
 
 /* ---------------- 转专业考试 ---------------- */
-function assignTransferCollege(s, sophomore, preserveUndergrad=false){
+function transferCollegeOptions(s){
+  return [...GROUPS['甲组'], ...GROUPS['乙组']].filter(name => name !== s.team.name);
+}
+function transferCollegeGroup(s, name){
+  if(s.rosters?.['甲组']?.includes(name)) return '甲组';
+  if(s.rosters?.['乙组']?.includes(name)) return '乙组';
+  return GROUPS['甲组'].includes(name) ? '甲组' : '乙组';
+}
+function assignTransferCollege(s, sophomore, preserveUndergrad=false, targetName=null){
+  const all = transferCollegeOptions(s);
+  const name = targetName ?? pick(all);
+  if(!all.includes(name)) throw new Error('无法转入该学院');
   s.completedUndergradYears = preserveUndergrad ? undergraduateYears(s) : null;
-  const oldName = s.team.name;
-  const all = [...GROUPS['甲组'], ...GROUPS['乙组']].filter(name => name !== oldName);
-  const name = pick(all);
-  const inA = state.rosters && state.rosters['甲组'] && state.rosters['甲组'].includes(name);
-  const inB = state.rosters && state.rosters['乙组'] && state.rosters['乙组'].includes(name);
-  const group = inA ? '甲组' : (inB ? '乙组' : (GROUPS['甲组'].includes(name) ? '甲组' : '乙组'));
+  const group = transferCollegeGroup(s, name);
   s.team = { name, group };
   s.league = group;
   s.isCaptain = false;
@@ -1857,6 +1865,19 @@ function assignTransferCollege(s, sophomore, preserveUndergrad=false){
   postMedia('officials', `HUSTFootball：${s.name} 转专业至${name}，${sophomore ? '学籍调整至大一，新身份立即生效。' : '新身份将从本届华工杯开始生效。'}`, {officials:4});
 }
 
+function transferCollegeSelectionEvent(s, sophomore){
+  return {tag:'转专业 · 目标选择', title:'选择转入专业', auto:false, transferSelection:true,
+    desc:`你已通过转专业考试，请选择想转入的主校区普通学院。${sophomore ? '确认后学籍降至大一，新的球队身份立即生效。' : '确认后将以新学院身份参加本届华工杯。'}各学院标注当前联赛组别，原学院与医学类学院不在转入范围内。`,
+    choices:transferCollegeOptions(s).map(name=>({
+      text:name, transferCollege:{name, group:transferCollegeGroup(s, name)}, effect:{},
+      resolve:s=>{
+        assignTransferCollege(s, sophomore, false, name);
+        return {result:`你选择转入${name}。${sophomore ? '学校已将你的学籍调整至大一，新的球队身份立即生效。' : '新身份将从本届华工杯开始生效。'}`};
+      }
+    }))
+  };
+}
+
 function transferExamEvent(s){
   if((s.year !== 0 && s.year !== 1) || s.flags.transferAttempted) return null;
   const sophomore = s.year === 1;
@@ -1864,14 +1885,17 @@ function transferExamEvent(s){
   const medical = !!s.tongji;
   return {tag:'转专业 · 学业事件', title:'转专业考试', auto:false,
     desc: sophomore
-      ? (medical ? '医学类学院的学生可以通过转专业考试转入主校区普通学院，并降级到大一。' : '大二学年，学校开放转专业考试。大二报名者需要更高的学业水平，成功后转入新的学院，并降级到大一，直接以新身份参加本届华工杯。')
-      : (medical ? '医学类学院的学生可以在大一通过转专业考试转入主校区普通学院。' : '新生杯结束后，学校开放转专业考试。大一报名者学业要求相对较低，成功后重新分配学院，并从本届华工杯开始启用新身份。'),
+      ? (medical ? '医学类学院的学生可以通过转专业考试，自行选择转入主校区普通学院，并降级到大一。' : '大二学年，学校开放转专业考试。大二报名者需要更高的学业水平，成功后可以自行选择新的学院，并降级到大一，直接以新身份参加本届华工杯。')
+      : (medical ? '医学类学院的学生可以在大一通过转专业考试，自行选择转入主校区普通学院。' : '新生杯结束后，学校开放转专业考试。大一报名者学业要求相对较低，成功后可以自行选择新的学院，并从本届华工杯开始启用新身份。'),
     choices:[
       {text:'报名参加转专业考试', flag:'transferAttempted', probFn:statProb({academy:0.012}, base, 0.05, 0.9), stat:'academy',
        good:{academy:1, mentality:2}, bad:{mentality:-2, academy:-1},
-       goodText: sophomore ? '你通过转专业考试，转入主校区普通学院，学校将你的学籍调整至大一，新的华工杯身份立即生效。' : '你通过转专业考试，转入主校区普通学院，新身份将从本届华工杯开始生效。',
+       goodText:'你通过了转专业考试！接下来可以自行选择想转入的主校区普通学院。',
        badText:'你未能通过转专业考试，留在原学院。转专业报名机会已经用完。',
-       onSuccess:s=>{ assignTransferCollege(s, sophomore); }},
+       onSuccess:s=>{
+         queue.unshift({type:'event', ev:transferCollegeSelectionEvent(s, sophomore)});
+         s.yearPlanTotal++;
+       }},
       {text:'暂不参加', effect:{}, result:'你没有报名转专业考试，继续留在原学院完成本学年。'}
     ]};
 }
@@ -4917,12 +4941,20 @@ function renderEvent(ev){
   $('evDesc').textContent = ev.desc;
   $('revealChoices').checked = !!state.showChoiceDetails;
   const box = $('evChoices'); box.innerHTML='';
+  box.className = ev.transferSelection ? 'collegegrid' : '';
   ev.choices.forEach((c,i)=>{
     const btn=document.createElement('button');
     btn.className='choice';
     const met = !c.cond || c.cond(state);
     const detail = state.showChoiceDetails ? choiceDetailText(c, ev.timeScale || 1) : '';
-    btn.innerHTML = `${c.text}${met ? '' : '（条件不足）'}${c.warn ? `<small>${c.warn}</small>` : ''}${detail ? `<small class="reveal-detail">${detail}</small>` : ''}`;
+    if(c.transferCollege){
+      btn.className = 'choice college-item';
+      btn.innerHTML = `<span class="teamlogo">${teamLogoHTML(c.transferCollege)}</span>
+        <span class="college-text"><span class="college-name">${c.text}</span>
+        <span class="college-group">${c.transferCollege.group}</span></span>`;
+    } else {
+      btn.innerHTML = `${c.text}${met ? '' : '（条件不足）'}${c.warn ? `<small>${c.warn}</small>` : ''}${detail ? `<small class="reveal-detail">${detail}</small>` : ''}`;
+    }
     if(!met){ btn.classList.add('disabled'); btn.disabled=true; }
     else { btn.onclick = ()=>chooseOption(ev, i); }
     box.appendChild(btn);
@@ -5085,7 +5117,7 @@ function chooseOption(ev, i){
   // 确定性选项（旧格式：里程碑等）
   let eff = c.effect || {};
   let result = c.result || '';
-  const drained = bioPharmacyChoiceDrain();   // 生物药学：低学业心态消耗
+  const drained = ev.transferSelection ? false : bioPharmacyChoiceDrain();   // 目标确认不重复扣除考试之外的心态
   if(c.resolve){ const r = c.resolve(state); eff = r.effect||eff; result = r.result||result; }
   const roll = applyChoiceRisk(c, {effects:scaledEffects(eff, ev.timeScale || 1), text:result});
   const actual = applyStats(roll.effects);
@@ -5164,6 +5196,7 @@ function animateResult(roll, drained, onDone=null){
 
 function showResult(result, eff, serviceYears=0, note='', onDone=null){
   const box = $('evChoices');
+  box.className = '';
   const delta = eff && Object.keys(eff).length ? `<div class="delta">${effectText(eff)}</div>`:'';
   box.innerHTML = `<div class="result">${result||'……'}</div>${delta}${note || ''}
     <button class="btn" id="btnNext">${serviceYears ? '开始服役' : '继续'}</button>`;

@@ -20,7 +20,7 @@ function game(seed) {
   }
   const document = {
     getElementById(id) { if (!nodes.has(id)) nodes.set(id, element()); return nodes.get(id); },
-    querySelectorAll() { return []; }, querySelector() { return nodes.get('evChoices')?.children.find(c=>c.className==='choice') || null; }, createElement: element,
+    querySelectorAll() { return []; }, querySelector() { return nodes.get('evChoices')?.children.find(c=>c.className.split(' ').includes('choice')) || null; }, createElement: element,
   };
   const context = vm.createContext({ document, console, setTimeout() {}, clearTimeout() {},
     localStorage: { getItem: k => storage.get(k) || null, setItem: (k,v) => storage.set(k,v), removeItem: k => storage.delete(k) } });
@@ -199,6 +199,113 @@ test('achievement workflow treats titles as data and appends each exact name onl
     assert.equal(lines.filter(line=>line.startsWith('- 测试')).length,2);
     assert.equal(readFileSync(output,'utf8').match(/status=duplicate/g).length,1);
   } finally { rmSync(dir,{recursive:true,force:true}); }
+});
+
+test('passing transfer exams pauses for a manual target in every mode and both eligible years', () => {
+  for(const mode of ['full','fast','easy']) for(const year of [0,1]) {
+    const {run,nodes}=game();
+    run(`state.gameMode=${JSON.stringify(mode)};state.year=${year};Math.random=()=>0;
+      const beforeTeam=state.team.name;const sentinel={type:'event',ev:{title:'后续事件',choices:[]}};
+      queue=[sentinel];state.yearPlanTotal=10;state.yearPlanDone=5;
+      animateResult=(roll,drained,onDone)=>{const actual=applyStats(roll.effects);showResult(roll.text,actual,0,'',onDone);};
+      chooseOption(transferExamEvent(state),0);`);
+    assert.equal(run('state.team.name'),run('beforeTeam'));
+    assert.equal(run('state.year'),year);
+    assert.equal(run('state.flags.transferDone'),false);
+    assert.equal(run('state.flags.transferAttempted'),true);
+    assert.equal(run('queue.length'),2);
+    assert.equal(run('queue[1]===sentinel'),true);
+    assert.equal(run('state.yearPlanTotal'),11);
+    assert.equal(run('transferExamEvent(state)'),null);
+    nodes.get('btnNext').onclick();
+    assert.equal(run('current.title'),'选择转入专业');
+    assert.equal(run('current.auto'),false);
+    assert.equal(run('state.yearPlanDone'),6);
+    run(`const selected=current.choices[current.choices.length-1];
+      const selectedName=selected.text;const beforeStats=JSON.stringify(state.stats);
+      chooseOption(current,current.choices.length-1);`);
+    assert.equal(run('state.team.name'),run('selectedName'));
+    assert.equal(run('state.flags.transferDone'),true);
+    assert.equal(run('state.year'),0);
+    assert.equal(run('state.flags.transferExtended'),year===1);
+    assert.equal(run('JSON.stringify(state.stats)'),run('beforeStats'));
+    assert.equal(run("document.getElementById('evChoices').className"),'');
+    nodes.get('btnNext').onclick();
+    assert.equal(run('current.title'),'后续事件');
+    assert.equal(run('state.yearPlanDone'),7);
+  }
+});
+
+test('failed and declined transfer exams preserve the college and remaining event queue', () => {
+  for(const choice of [0,1]) {
+    const {run}=game();
+    run(`state.gameMode='fast';state.year=1;Math.random=()=>.99;
+      const original=state.team.name;queue=[{type:'event',ev:{title:'后续事件'}}];
+      state.yearPlanTotal=9;chooseOption(transferExamEvent(state),${choice});`);
+    assert.equal(run('state.team.name'),run('original'));
+    assert.equal(run('state.year'),1);
+    assert.equal(run('state.flags.transferDone'),false);
+    assert.equal(run('state.flags.transferAttempted'),choice===0);
+    assert.equal(run('state.yearPlanTotal'),9);
+    assert.equal(run('queue.length'),1);
+    assert.equal(run('queue[0].ev.title'),'后续事件');
+    assert.equal(run('transferExamEvent(state)!==null'),choice===1);
+  }
+});
+
+test('transfer targets exclude the original and all medical colleges, including medical exits', () => {
+  const {run}=game();
+  assert.equal(run('transferCollegeOptions(state).length'),28);
+  assert.equal(run('transferCollegeOptions(state).includes(state.team.name)'),false);
+  assert.equal(run("GROUPS['同济组'].some(n=>transferCollegeOptions(state).includes(n))"),false);
+  run(`assignTeam('同济组','基础医学院');state.year=1;state.isCaptain=true;
+    const ev=transferCollegeSelectionEvent(state,true);const selected=ev.choices[5];
+    const selectedName=selected.text;selected.resolve(state);`);
+  assert.equal(run('ev.choices.length'),29);
+  assert.equal(run('state.team.name'),run('selectedName'));
+  assert.equal(run('state.medical || state.tongji || state.isCaptain || state.flags.medicalSplit'),false);
+  assert.equal(run('undergraduateYears(state)'),4);
+  assert.equal(run('state.year'),0);
+});
+
+test('chosen transfer college uses current promotion rosters and survives save reload', () => {
+  const {run}=game();
+  run(`const target=GROUPS['乙组'][0];const relegated=state.rosters['甲组'].pop();
+    state.rosters['乙组']=state.rosters['乙组'].filter(n=>n!==target);state.rosters['乙组'].push(relegated);
+    state.rosters['甲组'].push(target);const ev=transferCollegeSelectionEvent(state,false);
+    ev.choices.find(c=>c.text===target).resolve(state);saveGame();loadGame();`);
+  assert.equal(run('state.team.name'),run('target'));
+  assert.equal(run('state.team.group'),'甲组');
+  assert.equal(run('state.league'),'甲组');
+  assert.equal(run('ev.choices.find(c=>c.text===target).transferCollege.group'),'甲组');
+  assert.equal(run('state.flags.transferDone'),true);
+  run(`queue=[{type:'tourney',tourney:'华工杯',role:'player'}];processQueue();`);
+  assert.equal(run('tourney.league'),'甲组');
+  assert.equal(run('tourney.myGroup.teams.includes(target)'),true);
+});
+
+test('confirming a transfer target adds no stat penalty even with low biological-pharmacy grades', () => {
+  const {run}=game();
+  run(`assignTeam('同济组','药学院');state.flags.pharmacyTrack=BIO_PHARMACY;
+    state.stats.academy=50;state.stats.mentality=40;const before=JSON.stringify(state.stats);
+    chooseOption(transferCollegeSelectionEvent(state,false),0);`);
+  assert.equal(run('JSON.stringify(state.stats)'),run('before'));
+  assert.equal(run('state.flags.transferDone'),true);
+});
+
+test('invalid explicit transfer targets cannot partially mutate a career; graduate cross-exams retain their curriculum', () => {
+  const {run}=game();
+  run('const originalState=JSON.stringify(state);');
+  for(const target of ['不存在的学院','基础医学院',run('state.team.name')]) {
+    assert.throws(()=>run(`assignTransferCollege(state,true,false,${JSON.stringify(target)});`),/无法转入/);
+    assert.equal(run('JSON.stringify(state)'),run('originalState'));
+  }
+  run(`assignTeam('同济组','法医学系');state.year=4;state.stats.academy=100;Math.random=()=>.4;
+    milestoneEvent(4,state).choices.find(c=>c.text==='跨考').resolve(state);`);
+  assert.equal(run('undergraduateYears(state)'),5);
+  assert.equal(run('state.path'),'读研');
+  assert.equal(run('state.flags.crossExam'),true);
+  assert.equal(run('state.flags.transferExtended'),false);
 });
 
 
